@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class QUackstagramDatabaseApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(QUackstagramDatabaseApplication.class, args);
+        SpringApplication.run(Handler.class, args);
     }
 
 }
