@@ -38,12 +38,38 @@ create table if not exists Comments
     foreign key (Username) references Users (Username)
     );
 
-create index PostID
-    on Comments (PostID);
+create table if not exists Credentials
+(
+    Username varchar(255) not null
+    primary key,
+    Password varchar(255) not null
+    foreign key (Username) references Users (Username)
+    );
+
+create table if not exists Likes
+(
+    PostID   binary(16) not null,
+    Username varchar(255) not null,
+    primary key (PostID, Username),
+    constraint Likes_ibfk_1
+    foreign key (PostID) references Posts (PostID),
+    constraint Likes_ibfk_2
+    foreign key (Username) references Users (Username)
+    );
+
+create table if not exists Follows
+(
+    FollowerUsername varchar(255) not null,
+    FollowedUsername varchar(255) not null,
+    primary key (FollowerUsername, FollowedUsername),
+    constraint Follows_ibfk_1
+    foreign key (FollowerUsername) references Users (Username),
+    constraint Follows_ibfk_2
+    foreign key (FollowedUsername) references Users (Username)
+    constraint Follows_ibfk_3
+    check (FollowerUsername != FollowedUsername)
+    );
 
 create index Username
-    on Comments (Username);
-
-create index Username
-    on Posts (Username);
+    on Users (Username), Comments (Username), Posts (Username), Credentials (Username), Likes (Username), Follows (FollowerUsername), Follows (FollowedUsername);
 
