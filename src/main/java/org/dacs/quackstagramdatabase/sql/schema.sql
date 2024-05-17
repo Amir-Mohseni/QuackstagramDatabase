@@ -2,12 +2,11 @@ create table if not exists Users
 (
     Username       varchar(255)  not null
     primary key,
-    Password       varchar(255)  not null,
     ProfilePicture binary(16)    not null,
     Bio            text          null,
-    NumFollowers   int default 0 null,
-    NumFollowing   int default 0 null,
-    PostsCount     int default 0 null
+    NumFollowers   int default 0 not null,
+    NumFollowing   int default 0 not null,
+    PostsCount     int default 0 not null
     );
 
 create table if not exists Posts
