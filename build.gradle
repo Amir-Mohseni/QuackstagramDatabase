@@ -19,6 +19,7 @@ repositories {
 dependencies {
     compileOnly 'org.projectlombok:lombok' // Use the latest version of Lombok
     annotationProcessor 'org.projectlombok:lombok' // Use the latest version of Lombok
+    implementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'de.mkammerer:argon2-jvm:2.11'
