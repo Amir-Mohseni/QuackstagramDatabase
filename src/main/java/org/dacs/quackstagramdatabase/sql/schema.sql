@@ -77,8 +77,3 @@ create index PostID
 
 create index CommentID
     on Comments (CommentID);
-
-
-
-
-
