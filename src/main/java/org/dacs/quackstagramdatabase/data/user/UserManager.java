@@ -39,7 +39,7 @@ public class UserManager {
                 .create();
 
 
-        this.file = Paths.get("data", fileName).toFile();
+        this.file = Paths.get("", fileName).toFile();
         if(containsSaves())
             load();
     }
