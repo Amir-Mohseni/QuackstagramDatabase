@@ -23,6 +23,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'de.mkammerer:argon2-jvm:2.11'
+    runtimeOnly 'com.h2database:h2'
 }
 
 

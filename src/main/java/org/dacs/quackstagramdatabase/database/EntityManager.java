@@ -3,6 +3,8 @@ package org.dacs.quackstagramdatabase.database;
 import org.dacs.quackstagramdatabase.annotations.Column;
 import org.dacs.quackstagramdatabase.annotations.Entity;
 import org.dacs.quackstagramdatabase.annotations.Id;
+import org.dacs.quackstagramdatabase.annotations.Incremented;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,11 +17,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+@Component
 public class EntityManager {
     private final Connection connection;
 
-    public EntityManager(Connection connection) {
-        this.connection = connection;
+    public EntityManager(DatabaseConfig databaseConfig) throws SQLException {
+        this.connection = databaseConfig.getConnection();
+        this.connection.setAutoCommit(false);
     }
 
     public <T> void persist(T entity) throws SQLException, IllegalAccessException {
@@ -40,7 +44,7 @@ public class EntityManager {
         List<Object> values = new ArrayList<>();
 
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Column.class)) {
+            if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Incremented.class)) {
                 // get the field-level annotation @Column
                 Column column = field.getAnnotation(Column.class);
 
@@ -68,7 +72,32 @@ public class EntityManager {
             for (int i = 0; i < values.size(); i++) {
                 preparedStatement.setObject(i+1, values.get(i));
             }
-            preparedStatement.executeUpdate();
+
+            int result = preparedStatement.executeUpdate();
+
+            // Handle generated keys
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                // get the first generated key. There should be only 1 for our case
+                if (generatedKeys.next()) {
+                    // iterate through the fields of the entity class
+                    for (Field field : clazz.getDeclaredFields()) {
+                        // the field has to be @Id and @Incremented
+                        // typically there is only one
+                        if (field.isAnnotationPresent(Id.class) && field.isAnnotationPresent(Incremented.class)) {
+                            field.setAccessible(true);
+                            field.set(entity, generatedKeys.getObject(1, field.getType()));
+                        }
+                    }
+                }
+            }
+
+            if (result == 1) {
+                this.connection.commit();
+            } else {
+                connection.rollback();
+                throw new RuntimeException("Persist affected more or less than only one row. Rollback has been initiated.");
+
+            }
         }
     }
 
@@ -129,6 +158,52 @@ public class EntityManager {
         }
 
         return foundEntities;
+    }
+
+    public <T> void drop(Class<T> clazz, Object id) throws SQLException, IllegalAccessException {
+
+        // check if the class is supported;
+        if (!clazz.isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("Class " + clazz.getName() + " is not an @Entity");
+        }
+
+        // get the @Entity class-level annotation
+        Entity entityAnnotation = clazz.getAnnotation(Entity.class);
+        // extract the table name
+        String tableName = entityAnnotation.tableName();
+
+        // now search for the id column
+        String idColumn = null;
+        //iterate though the fields to find the id column
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(Id.class)) {
+                Column column = field.getAnnotation(Column.class);
+                idColumn = column.name();
+                break;
+            }
+        }
+
+        // if the id column cannot be found, throw exception
+        if (idColumn == null) {
+            throw new RuntimeException("No id column found in class " + clazz.getName());
+        }
+
+        // prepare the SQL select statement
+        String sql = "DELETE FROM " + tableName + " WHERE " + idColumn + " = ?";
+
+        try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql)) {
+            preparedStatement.setObject(1, id);
+
+            int result = preparedStatement.executeUpdate();
+
+            if (result == 1) {
+                this.connection.commit();
+            } else {
+                connection.rollback();
+                throw new RuntimeException("Delete affected more or less than only one row. Rollback has been initiated.");
+            }
+        }
+
     }
 
 }
