@@ -1,7 +1,6 @@
 package org.dacs.quackstagramdatabase.database;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +25,7 @@ public class DatabaseConnectionTest {
     private String USER;
 
     @Test
+    @Order(1)
     public void getConnectionText() throws SQLException {
         Connection connection = databaseConfig.getConnection();
         Assertions.assertNotNull(connection);
@@ -50,10 +50,23 @@ public class DatabaseConnectionTest {
     }
 
     @Test
+    @Order(2)
     public void addRowTest() throws SQLException, IllegalAccessException {
+        DatabaseTest test1 = new DatabaseTest(1,"test2", 1);
+        entityManager.persist(test1);
+    }
+
+    @Test
+    @Order(3)
+    public void addIncrementedRowTest() throws SQLException, IllegalAccessException {
         DatabaseTest test1 = new DatabaseTest("test2", 2);
         entityManager.persist(test1);
     }
 
+    @Test
+    @Order(4)
+    public void clearTest() throws SQLException, IllegalAccessException {
+        entityManager.deleteAll(DatabaseTest.class);
+    }
 
 }

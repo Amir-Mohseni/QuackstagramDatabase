@@ -13,8 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -40,7 +38,7 @@ public class EntityManager {
         String tableName = entityAnnotation.tableName();
 
         StringBuilder columnNames = new StringBuilder();
-        StringBuilder columnValues = new StringBuilder();
+        StringBuilder columnValuesPlaceholder = new StringBuilder();
         List<Object> values = new ArrayList<>();
 
         for (Field field : clazz.getDeclaredFields()) {
@@ -57,14 +55,14 @@ public class EntityManager {
                 columnNames.append(column.name()).append(",");
                 // do the same for the values
                 // these are for the SQL string
-                columnValues.append("?,");
+                columnValuesPlaceholder.append("?,");
                 // then append the actual value to values
                 values.add(field.get(entity));
             }
         }
 
         // craft the SQL insertion string
-        String sql = "INSERT INTO " + tableName + " (" + columnNames.substring(0, columnNames.length() - 1) + ") VALUES (" + columnValues.substring(0, columnValues.length() - 1) + ")";
+        String sql = "INSERT INTO " + tableName + " (" + columnNames.substring(0, columnNames.length() - 1) + ") VALUES (" + columnValuesPlaceholder.substring(0, columnValuesPlaceholder.length() - 1) + ")";
 
         // now insert the actual values into the SQL string
         // first convert the SQL string to a PreparedStatement
@@ -101,9 +99,7 @@ public class EntityManager {
         }
     }
 
-    public <T> List<T> find(Class<T> clazz, Object id) throws SQLException, IllegalAccessException {
-        List<T> foundEntities = new LinkedList<>();
-
+    public <T> T find(Class<T> clazz, Object id) throws SQLException, IllegalAccessException {
         // check if the class is supported;
         if (!clazz.isAnnotationPresent(Entity.class)) {
             throw new RuntimeException("Class " + clazz.getName() + " is not an @Entity");
@@ -146,7 +142,7 @@ public class EntityManager {
                             field.set(entity, value);
                         }
                     }
-                    foundEntities.add(entity);
+                    return entity;
                 }
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
@@ -156,12 +152,10 @@ public class EntityManager {
                 throw new RuntimeException(e);
             }
         }
-
-        return foundEntities;
+        return null;
     }
 
-    public <T> void drop(Class<T> clazz, Object id) throws SQLException, IllegalAccessException {
-
+    public <T> void delete(Class<T> clazz, Object id) throws SQLException, IllegalAccessException {
         // check if the class is supported;
         if (!clazz.isAnnotationPresent(Entity.class)) {
             throw new RuntimeException("Class " + clazz.getName() + " is not an @Entity");
@@ -188,7 +182,7 @@ public class EntityManager {
             throw new RuntimeException("No id column found in class " + clazz.getName());
         }
 
-        // prepare the SQL select statement
+        // prepare the SQL delete statement
         String sql = "DELETE FROM " + tableName + " WHERE " + idColumn + " = ?";
 
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql)) {
@@ -204,6 +198,36 @@ public class EntityManager {
             }
         }
 
+    }
+
+    public <T> void deleteAll(Class<T> clazz) throws SQLException, IllegalAccessException {
+        // check if the class is supported;
+        if (!clazz.isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("Class " + clazz.getName() + " is not an @Entity");
+        }
+
+        // get the @Entity class-level annotation
+        Entity entityAnnotation = clazz.getAnnotation(Entity.class);
+        // extract the table name
+        String tableName = entityAnnotation.tableName();
+
+        String idColumn = null;
+        //iterate though the fields to find the id column
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(Id.class)) {
+                Column column = field.getAnnotation(Column.class);
+                idColumn = column.name();
+                break;
+            }
+        }
+
+        // prepare the SQL truncate statement
+        String sql = "TRUNCATE TABLE " + tableName + "; ALTER TABLE " + tableName + " ALTER COLUMN " + idColumn + " RESTART WITH 1";
+
+        try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql)) {
+            int result = preparedStatement.executeUpdate();
+            this.connection.commit();
+        }
     }
 
 }
