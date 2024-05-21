@@ -64,10 +64,11 @@ public class DatabaseConnectionTest {
     }
 
     @Test
-    public void getEntityTest() throws SQLException, IllegalAccessException {
-        DatabaseTest test = entityManager.find(DatabaseTest.class, 1);
-        Assertions.assertNotNull(test);
-        Assertions.assertEquals(test.getData1(), "test2");
+    public void findEntityTest() throws SQLException, IllegalAccessException {
+        DatabaseTest databaseTest = entityManager.find(DatabaseTest.class, "1");
+        System.out.println(databaseTest);
+        Assertions.assertNotNull(databaseTest);
+        Assertions.assertEquals(databaseTest.getData1(), "test2");
     }
 
     @Test

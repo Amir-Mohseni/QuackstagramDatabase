@@ -18,6 +18,9 @@ public class DatabaseTest {
     @Column(name = "DATA2")
     private Integer data2;
 
+    public DatabaseTest() {
+    }
+
     public DatabaseTest(String data1, Integer data2) {
         this.data1 = data1;
         this.data2 = data2;
