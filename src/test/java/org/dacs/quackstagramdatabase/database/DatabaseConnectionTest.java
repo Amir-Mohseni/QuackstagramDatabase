@@ -64,6 +64,13 @@ public class DatabaseConnectionTest {
     }
 
     @Test
+    public void getEntityTest() throws SQLException, IllegalAccessException {
+        DatabaseTest test = entityManager.find(DatabaseTest.class, 1);
+        Assertions.assertNotNull(test);
+        Assertions.assertEquals(test.getData1(), "test2");
+    }
+
+    @Test
     @Order(4)
     public void clearTest() throws SQLException, IllegalAccessException {
         entityManager.deleteAll(DatabaseTest.class);
