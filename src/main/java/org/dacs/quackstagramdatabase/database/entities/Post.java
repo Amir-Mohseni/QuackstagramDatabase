@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 public class Post {
-    private UUID postId;
+    private Integer postId;
     private String username;
     private String caption;
     private String mediaUrl;

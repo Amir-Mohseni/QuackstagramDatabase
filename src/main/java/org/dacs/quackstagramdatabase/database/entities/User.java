@@ -7,8 +7,8 @@ import java.util.UUID;
 
 @Data
 public class User {
-    private UUID commentId;
-    private UUID postId;
+    private Integer commentId;
+    private Integer postId;
     private String username;
     private String commentText;
     private Timestamp commentTimestamp;

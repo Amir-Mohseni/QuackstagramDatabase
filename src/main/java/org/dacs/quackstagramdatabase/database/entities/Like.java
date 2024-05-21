@@ -7,8 +7,8 @@ import java.util.UUID;
 
 @Data
 public class Like {
-    private UUID likeId;
-    private UUID postId;
+    private Integer likeId;
+    private Integer postId;
     private String username;
     private Timestamp likeTimestamp;
 }

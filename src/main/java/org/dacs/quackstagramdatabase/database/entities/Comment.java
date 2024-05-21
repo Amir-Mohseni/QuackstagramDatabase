@@ -13,10 +13,10 @@ public class Comment {
 
     @Id
     @Column(name = "comment_id")
-    private UUID commentId;
+    private Integer commentId;
 
     @Column(name = "post_id")
-    private UUID postId;
+    private Integer postId;
 
     @Column(name = "username")
     private String username;
