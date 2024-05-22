@@ -13,4 +13,9 @@ public class FollowsEntity {
     @Id
     @Column(name = "FollowedUsername")
     String followed;
+
+    public FollowsEntity(String follower, String followed) {
+        this.follower = follower;
+        this.followed = followed;
+    }
 }
