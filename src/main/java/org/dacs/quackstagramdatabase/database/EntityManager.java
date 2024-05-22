@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -233,6 +234,47 @@ public class EntityManager {
             int result = preparedStatement.executeUpdate();
             this.connection.commit();
         }
+    }
+
+    public <T> List<T> findAll(Class<T> clazz) throws SQLException, IllegalAccessException {
+        // check if the class is supported;
+        if (!clazz.isAnnotationPresent(Entity.class)) {
+            throw new RuntimeException("Class " + clazz.getName() + " is not an @Entity");
+        }
+
+        Entity entityAnnotation = clazz.getAnnotation(Entity.class);
+        // extract the table name
+        String tableName = entityAnnotation.tableName();
+
+        String sql = "SELECT * FROM " + tableName;
+
+        try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<T> entitiesList = new LinkedList<>();
+
+                while(resultSet.next()) {
+                    T entity = clazz.getDeclaredConstructor().newInstance();
+                    for (Field field : clazz.getDeclaredFields()) {
+                        if (field.isAnnotationPresent(Column.class)) {
+                            Column column = field.getAnnotation(Column.class);
+                            Object value = resultSet.getObject(column.name());
+                            field.setAccessible(true);
+                            field.set(entity, value);
+                        }
+                    }
+                    entitiesList.add(entity);
+                }
+                return entitiesList;
+
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
 }
