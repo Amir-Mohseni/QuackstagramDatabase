@@ -1,79 +1,64 @@
-create table if not exists Users
-(
-    Username       varchar(255)  not null
-    primary key,
-    ProfilePicture binary(16)    not null,
-    Bio            text          null,
-    NumFollowers   int default 0 not null,
-    NumFollowing   int default 0 not null,
-    PostsCount     int default 0 not null
+-- Users table
+CREATE TABLE IF NOT EXISTS Users (
+    Username       VARCHAR(255)  NOT NULL PRIMARY KEY,
+    ProfilePicture BLOB          NOT NULL,
+    Bio            TEXT          NULL,
+    NumFollowers   INT           DEFAULT 0 NOT NULL,
+    NumFollowing   INT           DEFAULT 0 NOT NULL,
+    PostsCount     INT           DEFAULT 0 NOT NULL
+);
+
+-- Posts table
+CREATE TABLE IF NOT EXISTS Posts (
+    PostID      INT              NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Username    VARCHAR(255)     NULL,
+    Caption     TEXT             NULL,
+    MediaURL    BLOB             NULL,
+    PostDate    TIMESTAMP        DEFAULT CURRENT_TIMESTAMP NULL,
+    NumLikes    INT              DEFAULT 0 NULL,
+    NumComments INT              DEFAULT 0 NULL,
+    CONSTRAINT Posts_ibfk_1 FOREIGN KEY (Username) REFERENCES Users (Username)
+);
+
+-- Comments table
+CREATE TABLE IF NOT EXISTS Comments (
+                                        CommentID   INT              NOT NULL AUTO_INCREMENT,
+                                        PostID      INT              NOT NULL,
+                                        Username    VARCHAR(255)     NOT NULL,
+    CommentText TEXT             NOT NULL,
+    CommentDate TIMESTAMP        DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    PRIMARY KEY (CommentID),
+    CONSTRAINT Comments_ibfk_1 FOREIGN KEY (PostID) REFERENCES Posts (PostID),
+    CONSTRAINT Comments_ibfk_2 FOREIGN KEY (Username) REFERENCES Users (Username)
     );
 
-create table if not exists Posts
-(
-    PostID      binary(16)                          not null
-    primary key,
-    Username    varchar(255)                        null,
-    Caption     text                                null,
-    MediaURL    binary(16)                          null,
-    PostDate    timestamp default CURRENT_TIMESTAMP null,
-    NumLikes    int       default 0                 null,
-    NumComments int       default 0                 null,
-    constraint Posts_ibfk_1
-    foreign key (Username) references Users (Username)
+-- Credentials table
+CREATE TABLE IF NOT EXISTS Credentials (
+                                           Username VARCHAR(255) NOT NULL PRIMARY KEY,
+    Password VARCHAR(255) NOT NULL,
+    FOREIGN KEY (Username) REFERENCES Users (Username)
     );
 
-create table if not exists Comments
-(
-    CommentID   binary(16)                          not null,
-    PostID      binary(16)                          not null,
-    primary key (CommentID, PostID),
-    Username    varchar(255)                        not null,
-    CommentText text                                not null,
-    CommentDate timestamp default CURRENT_TIMESTAMP not null,
-    constraint Comments_ibfk_1
-    foreign key (PostID) references Posts (PostID),
-    constraint Comments_ibfk_2
-    foreign key (Username) references Users (Username)
+-- Likes table
+CREATE TABLE IF NOT EXISTS Likes (
+                                     PostID   INT              NOT NULL,
+                                     Username VARCHAR(255)     NOT NULL,
+    PRIMARY KEY (PostID, Username),
+    CONSTRAINT Likes_ibfk_1 FOREIGN KEY (PostID) REFERENCES Posts (PostID),
+    CONSTRAINT Likes_ibfk_2 FOREIGN KEY (Username) REFERENCES Users (Username)
     );
 
-create table if not exists Credentials
-(
-    Username varchar(255) not null
-    primary key,
-    Password varchar(255) not null,
-    foreign key (Username) references Users (Username)
+-- Follows table
+CREATE TABLE IF NOT EXISTS Follows (
+                                       FollowerUsername VARCHAR(255) NOT NULL,
+    FollowedUsername VARCHAR(255) NOT NULL,
+    PRIMARY KEY (FollowerUsername, FollowedUsername),
+    CONSTRAINT Follows_ibfk_1 FOREIGN KEY (FollowerUsername) REFERENCES Users (Username),
+    CONSTRAINT Follows_ibfk_2 FOREIGN KEY (FollowedUsername) REFERENCES Users (Username),
+    CONSTRAINT Follows_ibfk_3 CHECK (FollowerUsername != FollowedUsername)
     );
 
-create table if not exists Likes
-(
-    PostID   binary(16) not null,
-    Username varchar(255) not null,
-    primary key (PostID, Username),
-    constraint Likes_ibfk_1
-    foreign key (PostID) references Posts (PostID),
-    constraint Likes_ibfk_2
-    foreign key (Username) references Users (Username)
-    );
-
-create table if not exists Follows
-(
-    FollowerUsername varchar(255) not null,
-    FollowedUsername varchar(255) not null,
-    primary key (FollowerUsername, FollowedUsername),
-    constraint Follows_ibfk_1
-    foreign key (FollowerUsername) references Users (Username),
-    constraint Follows_ibfk_2
-    foreign key (FollowedUsername) references Users (Username),
-    constraint Follows_ibfk_3
-    check (FollowerUsername != FollowedUsername)
-    );
-
-create index Username
-    on Users (Username);
-
-create index PostID
-    on Comments (PostID);
-
-create index CommentID
-    on Comments (CommentID);
+-- Indexes
+CREATE INDEX idx_Username ON Users (Username);
+CREATE INDEX idx_PostID ON Comments (PostID);
+CREATE INDEX idx_CommentID ON Comments (CommentID);
