@@ -99,7 +99,7 @@ public class EntityManager {
         }
     }
 
-    public <T> T find(Class<T> clazz, Object id) throws SQLException, IllegalAccessException {
+    public <T> T find(Class<T> clazz, List<Object> ids) throws SQLException, IllegalAccessException {
         // check if the class is supported;
         if (!clazz.isAnnotationPresent(Entity.class)) {
             throw new RuntimeException("Class " + clazz.getName() + " is not an @Entity");
@@ -109,23 +109,27 @@ public class EntityManager {
         // extract the table name
         String tableName = entityAnnotation.tableName();
 
-        String idColumn = null;
-        //iterate though the fields to find the id column
-        for (Field field : clazz.getDeclaredFields()) {
+        StringBuilder idColumnNames = new StringBuilder();
+        StringBuilder idColumnValuesPlaceholder = new StringBuilder();
+        List<Object> idValues = new ArrayList<>();
+
+        for (int i = 0; i < clazz.getDeclaredFields().length; i++) {
+            Field field = clazz.getDeclaredFields()[i];
             if (field.isAnnotationPresent(Id.class)) {
                 Column column = field.getAnnotation(Column.class);
-                idColumn = column.name();
-                break;
+                idColumnNames.append(column.name()).append(",");
+                idColumnValuesPlaceholder.append("?,");
+                idValues.add(ids.get(i));
             }
         }
 
         // if the id column cannot be found, throw exception
-        if (idColumn == null) {
+        if (idColumnNames.isEmpty()) {
             throw new RuntimeException("No id column found in class " + clazz.getName());
         }
 
         // prepare the SQL select statement
-        String sql = "SELECT * FROM " + tableName + " WHERE " + idColumn + " = ?";
+        String sql = "";
 
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql)) {
             // set the ID
