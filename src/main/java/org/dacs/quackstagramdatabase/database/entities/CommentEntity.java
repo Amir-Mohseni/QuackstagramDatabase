@@ -4,26 +4,28 @@ import lombok.Data;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
+import org.dacs.quackstagramdatabase.database.annotations.Incremented;
 
 import java.util.UUID;
 
 @Data
-@Entity(tableName = "comments")
-public class Comment {
+@Entity(tableName = "Comments")
+public class CommentEntity {
 
     @Id
-    @Column(name = "comment_id")
+    @Incremented
+    @Column(name = "CommentID")
     private Integer commentId;
 
-    @Column(name = "post_id")
+    @Column(name = "PostID")
     private Integer postId;
 
-    @Column(name = "username")
+    @Column(name = "Username")
     private String username;
 
-    @Column(name = "comment_text")
+    @Column(name = "CommentText")
     private String commentText;
 
-    @Column(name = "comment_date")
+    @Column(name = "CommentDate")
     private String commentDate;
 }
