@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.List;
 
 @SpringBootTest
 public class DatabaseConnectionTest {
@@ -65,7 +66,7 @@ public class DatabaseConnectionTest {
 
     @Test
     public void findEntityTest() throws SQLException, IllegalAccessException {
-        DatabaseTest databaseTest = entityManager.find(DatabaseTest.class, "1");
+        DatabaseTest databaseTest = entityManager.find(DatabaseTest.class, List.of(new String[]{"1"}));
         System.out.println(databaseTest);
         Assertions.assertNotNull(databaseTest);
         Assertions.assertEquals(databaseTest.getData1(), "test2");

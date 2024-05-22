@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 @Entity(tableName = "Users")
-public class User {
+public class UserEntity {
     @Column(name = "Username")
     private String username;
 
