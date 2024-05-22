@@ -110,30 +110,31 @@ public class EntityManager {
         String tableName = entityAnnotation.tableName();
 
         StringBuilder idColumnNames = new StringBuilder();
-        StringBuilder idColumnValuesPlaceholder = new StringBuilder();
         List<Object> idValues = new ArrayList<>();
 
         for (int i = 0; i < clazz.getDeclaredFields().length; i++) {
             Field field = clazz.getDeclaredFields()[i];
             if (field.isAnnotationPresent(Id.class)) {
                 Column column = field.getAnnotation(Column.class);
-                idColumnNames.append(column.name()).append(",");
-                idColumnValuesPlaceholder.append("?,");
+                idColumnNames.append(column.name()).append(" = ? AND ");
                 idValues.add(ids.get(i));
             }
         }
 
         // if the id column cannot be found, throw exception
-        if (idColumnNames.isEmpty()) {
+        if (idColumnNames.length() <= 0) {
             throw new RuntimeException("No id column found in class " + clazz.getName());
         }
 
         // prepare the SQL select statement
-        String sql = "";
+        String sql = "SELECT * FROM " + tableName + " WHERE " + idColumnNames.substring(0, idColumnNames.length() - 5);
 
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql)) {
-            // set the ID
-            preparedStatement.setObject(1, id);
+            // set the IDs
+            for (int i = 0; i < idValues.size(); i++) {
+                preparedStatement.setObject(i+1, idValues.get(i));
+            }
+
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     T entity = clazz.getDeclaredConstructor().newInstance();
