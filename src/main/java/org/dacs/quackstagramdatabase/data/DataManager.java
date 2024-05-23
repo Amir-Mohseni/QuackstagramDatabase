@@ -2,14 +2,23 @@ package org.dacs.quackstagramdatabase.data;
 
 import org.dacs.quackstagramdatabase.data.post.PostManager;
 import org.dacs.quackstagramdatabase.data.user.UserManager;
+import org.dacs.quackstagramdatabase.database.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DataManager {
 
+    private EntityManager entityManager;
     private PostManager postManager;
     private UserManager userManager;
-    public DataManager() {
-        this.postManager = new PostManager();
-        this.userManager = new UserManager();
+
+    @Autowired
+    public DataManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+
+        this.postManager = new PostManager(entityManager);
+        this.userManager = new UserManager(entityManager);
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::saveAll));
     }

@@ -1,9 +1,4 @@
 package org.dacs.quackstagramdatabase.data.post;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.user.User;
 import org.dacs.quackstagramdatabase.database.DatabaseConfig;
 import org.dacs.quackstagramdatabase.database.EntityManager;
@@ -27,7 +22,6 @@ import java.util.UUID;
 @Component
 public class PostManager {
     private EntityManager entityManager;
-
     private HashMap<Integer, Post> posts;
 
     @Autowired
