@@ -26,14 +26,14 @@ import java.util.UUID;
 
 @Component
 public class PostManager {
-    @Autowired
     private EntityManager entityManager;
 
     private HashMap<Integer, Post> posts;
 
-    public PostManager(){
+    @Autowired
+    public PostManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
         this.posts = new HashMap<>();
-//        load();
     }
 
     public void postPost(User user, Post post){
