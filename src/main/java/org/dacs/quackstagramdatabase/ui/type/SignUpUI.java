@@ -4,15 +4,21 @@ import lombok.Getter;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.data.user.UserManager;
+import org.dacs.quackstagramdatabase.database.DatabaseConfig;
+import org.dacs.quackstagramdatabase.database.EntityManager;
+import org.dacs.quackstagramdatabase.database.entities.CredentialEntity;
+import org.dacs.quackstagramdatabase.database.entities.UserEntity;
 import org.dacs.quackstagramdatabase.ui.UI;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
+import org.dacs.quackstagramdatabase.util.Util;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.UUID;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -77,7 +83,7 @@ public class SignUpUI extends JFrame {
         fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
         fieldsPanel.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
 
-        initializeCridentials();
+        initializeCredentials();
 
         setUpFieldsPanel(fieldsPanel, photoPanel);
         fieldsPanel.add(bioText);
@@ -118,7 +124,7 @@ public class SignUpUI extends JFrame {
         fieldsPanel.add(Box.createVerticalStrut(10));
     }
 
-    private void initializeCridentials() {
+    private void initializeCredentials() {
         usernameText = new JTextField("Username");
         passwordText = new JTextField("Password");
         bioText = new JTextField("Bio");
@@ -144,7 +150,9 @@ public class SignUpUI extends JFrame {
         String password = passwordText.getText();
         String bio = bioText.getText();
 
-        if (Handler.getDataManager().forUsers().exists(username)) {
+        UserManager userManager = Handler.getDataManager().forUsers();
+
+        if (userManager.exists(username)) {
             JOptionPane.showMessageDialog(this, "Username already exists. Please choose a different username.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -154,20 +162,14 @@ public class SignUpUI extends JFrame {
             return;
         }
 
-        registeredUser = new User(
-                UUID.randomUUID(),
-                username,
-                Handler.getUtil().hash(password),
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-                bio, "", 0);
-
-        Handler.getDataManager().forUsers().registerUser(registeredUser);
+        String pfp_extention = Handler.getUtil().getFileExtension(getPossiblePicture());
+        registeredUser = userManager.registerUser(username, password, bio, pfp_extention);
         handleProfilePictureUpload(true);
 
         Handler.getUiManager().display(UI.SIGN_IN);
     }
 
-     // Method to handle profile picture upload
+    // Method to handle profile picture upload
      private void handleProfilePictureUpload(boolean infoCompleted) {
          if (!infoCompleted) {
              JFileChooser fileChooser = new JFileChooser();
@@ -182,5 +184,7 @@ public class SignUpUI extends JFrame {
              }
          } else registeredUser.setProfilePicture(getPossiblePicture());
      }
+
+
 
 }

@@ -3,7 +3,11 @@ package org.dacs.quackstagramdatabase.data.user;
 import lombok.Getter;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
-import org.dacs.quackstagramdatabase.data.picture.Picture;
+import org.dacs.quackstagramdatabase.data.post.Post;
+import org.dacs.quackstagramdatabase.database.DatabaseConfig;
+import org.dacs.quackstagramdatabase.database.EntityManager;
+import org.dacs.quackstagramdatabase.database.entities.FollowsEntity;
+import org.dacs.quackstagramdatabase.database.entities.PostEntity;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,57 +31,68 @@ public class User  {
     private String bio, extension;
     @Getter
     private String hashedPassword;
-    @Getter
-    @Setter
-    private int postsCount;
-    @Getter
-    private List<String> rawFollowers;
-    @Getter
-    private List<String> rawFollowing;
-    @Getter
-    private List<String> rawPictures;
-    @Getter
-    private UUID uuid;
 
 
 
-    public User(UUID uuid, String username, String hashedPassword, List<String> rawFollowers, List<String> rawFollowing, List<String> rawPictures, String bio, String extension, int postsCount) {
-        this.uuid = uuid;
+    public User(String username, String hashedPassword, String bio, String extension) {
         this.username = username;
         this.hashedPassword = hashedPassword;
-        this.rawFollowers = rawFollowers;
-        this.rawFollowing = rawFollowing;
-        this.rawPictures = rawPictures;
         this.bio = bio;
         this.extension = extension;
-        this.postsCount = postsCount;
-    }
-
-    public void addFollowing(UUID userUuid){
-        getRawFollowers().add(userUuid.toString());
     }
 
     public void follow(User user){
-        getRawFollowing().add(user.getUuid().toString());
-        user.getRawFollowers().add(this.getUuid().toString());
-        Handler.getDataManager().forUsers().save();
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+
+            FollowsEntity newFollow = new FollowsEntity(this.username, user.getUsername());
+
+            em.persist(newFollow);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void addPicture(UUID pictureUuid) {
-        rawPictures.add(pictureUuid.toString());
-        postsCount++;
+    public boolean isFollowing(User user) {
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+
+            FollowsEntity follow = em.find(FollowsEntity.class, Arrays.asList(this.username, user.getUsername()));
+
+            return follow != null;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<Picture> getPostedPictures(){
-        return rawPictures.stream()
-                .map(pictureUuid -> Handler.getDataManager().forPictures().getByUUID(UUID.fromString(pictureUuid)))
-                .collect(Collectors.toList());
+    public List<Post> getPostedPosts() {
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+
+            List<PostEntity> postEntities = em.findAll(PostEntity.class);
+            List<Post> posts = new ArrayList<>();
+
+            for (PostEntity postEntity : postEntities) {
+                if (postEntity.getUsername().equals(this.username)) {
+                    posts.add(new Post(postEntity.getPostId(), postEntity.getUsername(), postEntity.getCaption(), postEntity.getMediaUrl()));
+                }
+            }
+            return posts;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+//        return rawPosts.stream()
+//                .map(pictureUuid -> Handler.getDataManager().forPosts().getByUUID(UUID.fromString(pictureUuid)))
+//                .collect(Collectors.toList());
     }
 
     public HashMap<User, LocalDateTime> getNotificationsSorted(){
         List<Map.Entry<User, LocalDateTime>> entryList = new ArrayList<>();
 
-        for(Picture picture : getPostedPictures()){
+        for(Post picture : getPostedPosts()){
             entryList.addAll(picture.getLikesData().entrySet());
         }
 
@@ -92,16 +107,54 @@ public class User  {
         return map;
     }
 
-    public List<User> getFollowing(){
-        return rawFollowing.stream()
-                .map(followingUuid -> Handler.getDataManager().forUsers().getByUUID(UUID.fromString(followingUuid)))
-                .collect(Collectors.toList());
+    public List<User> getFollowing() {
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+
+            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
+
+            return follows.stream()
+                    .filter(follow -> follow.getFollower().equals(this.username))
+                    .map(follow -> Handler.getDataManager().forUsers().getByUsername(follow.getFollowed()))
+                    .collect(Collectors.toList());
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<User> getFollowers(){
-        return rawFollowers.stream()
-                .map(followingUuid -> Handler.getDataManager().forUsers().getByUUID(UUID.fromString(followingUuid)))
-                .collect(Collectors.toList());
+    public int getPostsCount(){
+        return getPostedPosts().size();
+    }
+
+    public int getFollowingCount() {
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+
+            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
+
+            return (int) follows.stream()
+                    .filter(follow -> follow.getFollower().equals(this.username))
+                    .count();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getFollowersCount(){
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+
+            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
+
+            return (int) follows.stream()
+                    .filter(follow -> follow.getFollowed().equals(this.username))
+                    .count();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ImageIcon getProfilePicture(int width, int height){
@@ -126,4 +179,19 @@ public class User  {
         }
     }
 
+    public List<User> getFollowers() {
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+
+            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
+
+            return follows.stream()
+                    .filter(follow -> follow.getFollowed().equals(this.username))
+                    .map(follow -> Handler.getDataManager().forUsers().getByUsername(follow.getFollower()))
+                    .collect(Collectors.toList());
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

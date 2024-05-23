@@ -1,25 +1,19 @@
 package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
-import org.dacs.quackstagramdatabase.data.picture.Picture;
+import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.database.DatabaseConfig;
+import org.dacs.quackstagramdatabase.database.EntityManager;
+import org.dacs.quackstagramdatabase.database.entities.PostEntity;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
+import java.sql.SQLException;
 
 public class ImageUploadUI extends JFrame {
 
@@ -97,19 +91,13 @@ public class ImageUploadUI extends JFrame {
             File selectedFile = fileChooser.getSelectedFile();
 
             User user = Handler.getDataManager().forUsers().getCurrentUser();
-            Picture picture = new Picture(
-                    UUID.randomUUID(),
-                    user.getUuid(),
-                    bioTextArea.getText(),
-                    "",
-                    new ArrayList<>(),
-                    new HashMap<>())
-                    .uploadImage(selectedFile);
 
-            Handler.getDataManager().forPictures().postPicture(
-                    user, picture);
+            Post post = createNewPost(user, selectedFile);
 
-            ImageIcon imageIcon = picture.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE);
+            Handler.getDataManager().forPosts().postPost(
+                    user, post);
+
+            ImageIcon imageIcon = post.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE);
 
             // Check if imagePreviewLabel has a valid size
             if (imagePreviewLabel.getWidth() > 0 && imagePreviewLabel.getHeight() > 0) {
@@ -136,6 +124,26 @@ public class ImageUploadUI extends JFrame {
             // Change the text of the upload button
             uploadButton.setText("Upload Another Image");
             JOptionPane.showMessageDialog(this, "Image uploaded and preview updated!");
+        }
+    }
+
+    private Post createNewPost(User user, File selectedFile) {
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+            PostEntity postEntity = new PostEntity(user.getUsername(), bioTextArea.getText(), Handler.getUtil().getFileExtension(selectedFile));
+
+            em.persist(postEntity);
+
+            Post post = new Post(
+                    postEntity.getPostId(),
+                    postEntity.getUsername(),
+                    postEntity.getCaption(),
+                    postEntity.getMediaUrl())
+                    .uploadImage(selectedFile);
+
+            return post;
+        } catch (SQLException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

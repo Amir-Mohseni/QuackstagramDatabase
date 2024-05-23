@@ -6,100 +6,88 @@ import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
+import org.dacs.quackstagramdatabase.database.DatabaseConfig;
+import org.dacs.quackstagramdatabase.database.EntityManager;
+import org.dacs.quackstagramdatabase.database.entities.CredentialEntity;
+import org.dacs.quackstagramdatabase.database.entities.UserEntity;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
 
 public class UserManager {
-    private String fileName = "users.json";
-    private File file;
-    private HashMap<UUID, User> users;
 
     @Getter
     @Setter
     private User currentUser;
-    private Gson gson;
 
-    public UserManager(){
-        this.users = new HashMap<>();
-
-        //loading all the users from the data file
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(User.class, new UserWrapper())
-                .setPrettyPrinting()
-                .create();
-
-
-        this.file = Paths.get("", fileName).toFile();
-        if(containsSaves())
-            load();
-    }
-
-    public User auth(String username, String password){
-        User authenticatedUser = users.values().stream()
-                .filter(user -> Handler.getUtil().matches(password, user.getHashedPassword()) && user.getUsername().equalsIgnoreCase(username))
-                .findFirst()
-                .orElse(null);
-
-        setCurrentUser(authenticatedUser);
-        return authenticatedUser;
-    }
-
-    public boolean exists(String username){
-        return users.values().stream()
-                .anyMatch(user -> user.getUsername().equalsIgnoreCase(username));
-    }
-
-    public void registerUser(User user){
-        users.put(user.getUuid(), user);
-        save();
-    }
-
-    public User getByUUID(UUID uuid){
-        return users.get(uuid);
-    }
-
-    public List<User> getAsList(){
-        return new ArrayList<>(users.values());
-    }
-
-    private boolean containsSaves(){
-        return file.exists();
-    }
-
-    public void save(){
+    public User auth(String username, String password) {
         try {
-            if(!containsSaves())
-                Files.writeString(file.toPath(), gson.toJson(getAsList()), StandardOpenOption.CREATE);
-            else Files.writeString(file.toPath(), gson.toJson(getAsList()), StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
+            DatabaseConfig dbConfig = new DatabaseConfig();
+            EntityManager entityManager = new EntityManager(dbConfig);
+
+            List<Object> primaryKeys = new ArrayList<>();
+            primaryKeys.add(username);
+
+            User authenticatedUser = entityManager.find(User.class, primaryKeys);
+            if (authenticatedUser == null || !Handler.getUtil().matches(password, authenticatedUser.getHashedPassword())) {
+                authenticatedUser = null;
+            }
+
+            setCurrentUser(authenticatedUser);
+            return authenticatedUser;
+        }
+        catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void load(){
+    public boolean exists(String username) {
+        try {
+            DatabaseConfig dbConfig = new DatabaseConfig();
+            EntityManager entityManager = new EntityManager(dbConfig);
 
-        List<User> loadedUsers;
-        
-        try(FileReader reader = new FileReader(file)) {
-            Type listType = new TypeToken<List<User>>() {}.getType();
+            List<Object> primaryKeys = new ArrayList<>();
+            primaryKeys.add(username);
 
-            loadedUsers = gson.fromJson(reader, listType);
-        } catch (IOException e) {
+            return entityManager.find(User.class, primaryKeys) != null;
+        }
+        catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
 
-        for(User user : loadedUsers){
-            users.put(user.getUuid(), user);
+    public User registerUser(String username, String password, String bio, String pfp_extention) {
+        try {
+            EntityManager em = new EntityManager(new DatabaseConfig());
+            UserEntity userEntity = new UserEntity(username, pfp_extention, bio);
+            CredentialEntity credentialEntity = new CredentialEntity(username, password);
+
+            em.persist(userEntity);
+            em.persist(credentialEntity);
+
+            return new User(username, password, bio, pfp_extention);
+        } catch (SQLException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    public User getByUsername(String username) {
+        try {
+            DatabaseConfig dbConfig = new DatabaseConfig();
+            EntityManager entityManager = new EntityManager(dbConfig);
+
+            List<Object> primaryKeys = new ArrayList<>();
+            primaryKeys.add(username);
+
+            return entityManager.find(User.class, primaryKeys);
+        }
+        catch (SQLException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

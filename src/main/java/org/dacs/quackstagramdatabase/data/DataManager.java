@@ -1,27 +1,25 @@
 package org.dacs.quackstagramdatabase.data;
 
-import lombok.Getter;
-import org.dacs.quackstagramdatabase.data.picture.PictureManager;
+import org.dacs.quackstagramdatabase.data.post.PostManager;
 import org.dacs.quackstagramdatabase.data.user.UserManager;
 
 public class DataManager {
 
-    private PictureManager pictureManager;
+    private PostManager postManager;
     private UserManager userManager;
     public DataManager() {
-        this.pictureManager = new PictureManager();
+        this.postManager = new PostManager();
         this.userManager = new UserManager();
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::saveAll));
     }
 
     public void saveAll(){
-        pictureManager.save();
-        userManager.save();
+        // Save anything needed to be saved
     }
 
-    public PictureManager forPictures(){
-        return pictureManager;
+    public PostManager forPosts(){
+        return postManager;
     }
 
     public UserManager forUsers(){

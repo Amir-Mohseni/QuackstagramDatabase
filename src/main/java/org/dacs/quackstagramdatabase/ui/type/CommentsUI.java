@@ -1,8 +1,9 @@
 package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
-import org.dacs.quackstagramdatabase.data.picture.Picture;
+import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.database.entities.CommentEntity;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 
 import javax.swing.*;
@@ -11,11 +12,11 @@ import java.awt.*;
 
 
 public class CommentsUI extends JFrame {
-    Picture picture;
+    Post post;
     JPanel contentPanel; // Declare contentPanel as a class-level variable to access it later
 
-    public CommentsUI(Picture picture) {
-        this.picture = picture;
+    public CommentsUI(Post post) {
+        this.post = post;
 
         setTitle("Comments");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
@@ -56,9 +57,8 @@ public class CommentsUI extends JFrame {
     private void updateCommentsPanel() {
         contentPanel.removeAll(); // Clear existing comments
         //Iterate over the comments and add them to the panel key and value
-        for (User user : picture.getComments().keySet()) {
-            String comment = picture.getComments().get(user);
-            String commentText = user.getUsername() + ": " + comment;
+        for (CommentEntity comment: post.getComments()) {
+            String commentText = comment.getUsername() + ": " + comment.getCommentText();
             JLabel commentLabel = new JLabel(commentText);
             commentLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
             contentPanel.add(commentLabel);
@@ -74,7 +74,7 @@ public class CommentsUI extends JFrame {
             String comment = commentField.getText();
             if (!comment.isEmpty()) {
                 User currentUser = Handler.getDataManager().forUsers().getCurrentUser();
-                picture.addComment(currentUser, comment);
+                post.addComment(currentUser, comment);
                 // Update the content panel with the new comment
                 String commentText = currentUser.getUsername() + ": " + comment;
                 JLabel newCommentLabel = new JLabel(commentText);

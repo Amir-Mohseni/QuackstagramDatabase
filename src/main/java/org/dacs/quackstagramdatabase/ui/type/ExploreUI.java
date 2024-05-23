@@ -1,27 +1,16 @@
 package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
-import org.dacs.quackstagramdatabase.data.picture.Picture;
+import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 public class ExploreUI extends JFrame {
 
@@ -80,15 +69,15 @@ public class ExploreUI extends JFrame {
         JPanel imageGridPanel = new JPanel(new GridLayout(0, 3, 2, 2)); // 3 columns, auto rows
 
 
-        List<Picture> pictures = Handler.getDataManager().forPictures().getAsList();
+        List<Post> posts = Handler.getDataManager().forPosts().getAsList();
         // Load images from the uploaded folder
 
-        for (Picture picture : pictures) {
-            JLabel imageLabel = new JLabel(picture.getImage(IMAGE_SIZE, IMAGE_SIZE));
+        for (Post post : posts) {
+            JLabel imageLabel = new JLabel(post.getImage(IMAGE_SIZE, IMAGE_SIZE));
             imageLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    displayImage(picture); // Call method to display the clicked image
+                    displayImage(post); // Call method to display the clicked image
                 }
             });
             imageGridPanel.add(imageLabel);
@@ -121,7 +110,7 @@ public class ExploreUI extends JFrame {
         return headerPanel;
     }
 
-    private void displayImage(Picture picture) {
+    private void displayImage(Post post) {
         getContentPane().removeAll();
         setLayout(new BorderLayout());
 
@@ -132,12 +121,12 @@ public class ExploreUI extends JFrame {
         JPanel imageViewerPanel = new JPanel(new BorderLayout());
 
         // Calculate time since posting
-        long days = ChronoUnit.DAYS.between(picture.getWhenPosted(), LocalDateTime.now());
+        long days = ChronoUnit.DAYS.between(post.getWhenPosted(), LocalDateTime.now());
         String timeSincePosting = days + " day" + (days != 1 ? "s" : "") + " ago";
 
         // Top panel for username and time since posting
         JPanel topPanel = new JPanel(new BorderLayout());
-        JButton usernameLabel = new JButton(picture.getPostedBy().getUsername());
+        JButton usernameLabel = new JButton(post.getPostedBy().getUsername());
         JLabel timeLabel = new JLabel(timeSincePosting);
         timeLabel.setHorizontalAlignment(JLabel.RIGHT);
         topPanel.add(usernameLabel, BorderLayout.WEST);
@@ -147,13 +136,13 @@ public class ExploreUI extends JFrame {
         // Prepare the image for display
         JLabel imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
-        imageLabel.setIcon(picture.getImage(IMAGE_SIZE, IMAGE_SIZE));
+        imageLabel.setIcon(post.getImage(IMAGE_SIZE, IMAGE_SIZE));
 
         // Bottom panel for bio and likes
         JPanel bottomPanel = new JPanel(new BorderLayout());
-        JTextArea bioTextArea = new JTextArea(picture.getCaption());
+        JTextArea bioTextArea = new JTextArea(post.getCaption());
         bioTextArea.setEditable(false);
-        JLabel likesLabel = new JLabel("Likes: " + picture.getRawLikes().size());
+        JLabel likesLabel = new JLabel("Likes: " + post.getLikesCount());
         bottomPanel.add(bioTextArea, BorderLayout.CENTER);
         bottomPanel.add(likesLabel, BorderLayout.SOUTH);
 
@@ -186,7 +175,7 @@ public class ExploreUI extends JFrame {
 
         usernameLabel.addActionListener(e -> {
             InstagramProfileUI profileUI = new InstagramProfileUI();
-            profileUI.setCurrentUser(picture.getPostedBy());
+            profileUI.setCurrentUser(post.getPostedBy());
             profileUI.setVisible(true);
             Handler.getUiManager().setCurrentFrame(profileUI);
             dispose(); // Close the current frame

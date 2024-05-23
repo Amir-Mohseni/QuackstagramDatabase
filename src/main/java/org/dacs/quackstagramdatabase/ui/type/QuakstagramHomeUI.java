@@ -1,11 +1,10 @@
 package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
-import org.dacs.quackstagramdatabase.data.picture.Picture;
+import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.user.User;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.event.MouseAdapter;
@@ -14,19 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
 public class QuakstagramHomeUI extends JFrame {
     private static final int IMAGE_WIDTH = UIUtil.WIDTH - 100; // Width for the image posts
@@ -89,7 +75,7 @@ public class QuakstagramHomeUI extends JFrame {
         User currentUser = Handler.getDataManager().forUsers().getCurrentUser();
 
         for(User user : currentUser.getFollowing())
-            for(Picture picture : user.getPostedPictures()){
+            for(Post post : user.getPostedPosts()){
 
                 JPanel itemPanel = new JPanel();
                 itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
@@ -105,20 +91,20 @@ public class QuakstagramHomeUI extends JFrame {
                 imageLabel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
                 imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Add border to image label
 
-                ImageIcon icon = picture.getImage(IMAGE_WIDTH, IMAGE_HEIGHT);
+                ImageIcon icon = post.getImage(IMAGE_WIDTH, IMAGE_HEIGHT);
                 if(icon == null){
                     // Handle exception: Image file not found or reading error
                     imageLabel.setText("Image not found");
                 } else imageLabel.setIcon(icon);
 
 
-                JLabel descriptionLabel = new JLabel(picture.getCaption());
+                JLabel descriptionLabel = new JLabel(post.getCaption());
                 descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-                JLabel likesLabel = new JLabel("Likes: " + picture.getLikes().size());
+                JLabel likesLabel = new JLabel("Likes: " + post.getLikes().size());
                 likesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-                JButton likeButton = getLikeButton(picture, likesLabel);
+                JButton likeButton = getLikeButton(post, likesLabel);
 
                 itemPanel.add(nameLabel);
                 itemPanel.add(imageLabel);
@@ -132,7 +118,7 @@ public class QuakstagramHomeUI extends JFrame {
                 imageLabel.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        displayImage(picture); // Call a method to switch to the image view
+                        displayImage(post); // Call a method to switch to the image view
                     }
                 });
 
@@ -146,7 +132,7 @@ public class QuakstagramHomeUI extends JFrame {
             }
     }
 
-    private JButton getLikeButton(Picture picture, JLabel likesLabel) {
+    private JButton getLikeButton(Post post, JLabel likesLabel) {
         JButton likeButton = new JButton("❤");
         likeButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         likeButton.setBackground(LIKE_BUTTON_COLOR); // Set the background color for the like button
@@ -155,7 +141,7 @@ public class QuakstagramHomeUI extends JFrame {
         likeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleLikeAction(picture, likesLabel);
+                handleLikeAction(post, likesLabel);
             }
         });
         return likeButton;
@@ -174,32 +160,32 @@ public class QuakstagramHomeUI extends JFrame {
         return headerPanel;
     }
 
-    private void handleLikeAction(Picture picture, JLabel likesLabel) {
+    private void handleLikeAction(Post post, JLabel likesLabel) {
         User currentUser = Handler.getDataManager().forUsers().getCurrentUser();
-        picture.addLike(currentUser);
+        post.addLike(currentUser);
 
-        likesLabel.setText("Likes: " + picture.getRawLikes().size());
+        likesLabel.setText("Likes: " + post.getLikesCount());
     }
 
-    private void displayImage(Picture picture) {
+    private void displayImage(Post post) {
         imageViewPanel.removeAll(); // Clear previous content
 
-        JLabel likesLabel = new JLabel("Likes: " + picture.getRawLikes().size()); // Update this line
+        JLabel likesLabel = new JLabel("Likes: " + post.getLikesCount()); // Update this line
 
         // Display the image
         JLabel fullSizeImageLabel = new JLabel();
         fullSizeImageLabel.setHorizontalAlignment(JLabel.CENTER);
 
-        ImageIcon icon = picture.getImage(IMAGE_WIDTH, IMAGE_HEIGHT);
+        ImageIcon icon = post.getImage(IMAGE_WIDTH, IMAGE_HEIGHT);
         if(icon == null){
             fullSizeImageLabel.setText("Image not found");
-        } else fullSizeImageLabel.setIcon(picture.getImage(IMAGE_WIDTH, IMAGE_HEIGHT));
+        } else fullSizeImageLabel.setIcon(post.getImage(IMAGE_WIDTH, IMAGE_HEIGHT));
 
 
         //User Info 
         JPanel userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
-        JLabel userName = new JLabel(picture.getPostedBy().getUsername());
+        JLabel userName = new JLabel(post.getPostedBy().getUsername());
         userName.setFont(new Font("Arial", Font.BOLD, 18));
         userPanel.add(userName);//User Name
 
@@ -211,8 +197,8 @@ public class QuakstagramHomeUI extends JFrame {
         likeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleLikeAction(picture, likesLabel); // Update this line
-                displayImage(picture); // Refresh the view
+                handleLikeAction(post, likesLabel); // Update this line
+                displayImage(post); // Refresh the view
             }
         });
 
@@ -221,7 +207,7 @@ public class QuakstagramHomeUI extends JFrame {
         viewComments.addActionListener(new ActionListener() {
                                            @Override
                                            public void actionPerformed(ActionEvent e) {
-                                                  new CommentsUI(picture).setVisible(true);
+                                                  new CommentsUI(post).setVisible(true);
                                            }
                                        });
 
@@ -231,8 +217,8 @@ public class QuakstagramHomeUI extends JFrame {
         // Information panel at the bottom
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.add(new JLabel(picture.getCaption())); // Description
-        infoPanel.add(new JLabel("Likes:" + picture.getLikes().size())); // Likes
+        infoPanel.add(new JLabel(post.getCaption())); // Description
+        infoPanel.add(new JLabel("Likes:" + post.getLikes().size())); // Likes
         infoPanel.add(likeButton);
 
 

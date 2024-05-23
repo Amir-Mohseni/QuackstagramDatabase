@@ -3,7 +3,7 @@ package org.dacs.quackstagramdatabase.ui.type;
 import lombok.Getter;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
-import org.dacs.quackstagramdatabase.data.picture.Picture;
+import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.user.User;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 
@@ -12,19 +12,10 @@ import javax.swing.*;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
 import java.awt.*;
-import java.nio.file.*;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
-
 
 
 public class InstagramProfileUI extends JFrame {
@@ -83,7 +74,7 @@ public class InstagramProfileUI extends JFrame {
 
     private JPanel createHeaderPanel() {
         User loggedInUser = Handler.getDataManager().forUsers().getCurrentUser();
-        boolean isCurrentUser = loggedInUser.getUuid().equals(currentUser.getUuid());
+        boolean isCurrentUser = loggedInUser.getUsername().equals(currentUser.getUsername());
 
         // Header Panel
         JPanel headerPanel = new JPanel();
@@ -105,8 +96,8 @@ public class InstagramProfileUI extends JFrame {
         statsPanel.setBackground(new Color(249, 249, 249));
         System.out.println("Number of posts for this user" + currentUser.getPostsCount());
         statsPanel.add(createStatLabel(Integer.toString(currentUser.getPostsCount()), "Posts"));
-        statsPanel.add(createStatLabel(Integer.toString(currentUser.getRawFollowers().size()), "Followers"));
-        statsPanel.add(createStatLabel(Integer.toString(currentUser.getRawFollowing().size()), "Following"));
+        statsPanel.add(createStatLabel(Integer.toString(currentUser.getFollowersCount()), "Followers"));
+        statsPanel.add(createStatLabel(Integer.toString(currentUser.getFollowingCount()), "Following"));
         statsPanel.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 0)); // Add some vertical padding
 
 
@@ -119,7 +110,7 @@ public class InstagramProfileUI extends JFrame {
         } else {
             followButton = new JButton("Follow");
 
-            if(currentUser.getRawFollowers().contains(loggedInUser.getUuid().toString())) {
+            if(loggedInUser.isFollowing(currentUser)) {
                 followButton.setText("Following");
             } else {
                 followButton.addActionListener(e -> {
@@ -180,12 +171,12 @@ public class InstagramProfileUI extends JFrame {
         contentPanel.removeAll(); // Clear existing content
         contentPanel.setLayout(new GridLayout(0, 3, 5, 5)); // Grid layout for image grid
 
-        for(Picture picture : currentUser.getPostedPictures()){
-            JLabel imageLabel = new JLabel(picture.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE));
+        for(Post post : currentUser.getPostedPosts()){
+            JLabel imageLabel = new JLabel(post.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE));
             imageLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    displayImage(picture); // Call method to display the clicked image
+                    displayImage(post); // Call method to display the clicked image
                 }
             });
             contentPanel.add(imageLabel);
@@ -201,12 +192,12 @@ public class InstagramProfileUI extends JFrame {
         repaint();
     }
 
-    private JPanel displayLikeCount(Picture picture) {
+    private JPanel displayLikeCount(Post post) {
         JPanel likePanel = new JPanel();
         likePanel.setLayout(new BoxLayout(likePanel, BoxLayout.Y_AXIS));
         likePanel.setBackground(new Color(249, 249, 249));
 
-        JLabel likesLabel = new JLabel("Likes: " + picture.getRawLikes().size());
+        JLabel likesLabel = new JLabel("Likes: " + post.getLikesCount());
         likesLabel.setFont(new Font("Arial", Font.BOLD, 12));
         likesLabel.setForeground(Color.BLACK);
         likePanel.add(likesLabel);
@@ -216,8 +207,8 @@ public class InstagramProfileUI extends JFrame {
     }
 
 
-    private void displayImage(Picture picture) {
-        ImageIcon imageIcon = picture.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE);
+    private void displayImage(Post post) {
+        ImageIcon imageIcon = post.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE);
         contentPanel.removeAll(); // Remove existing content
         contentPanel.setLayout(new BorderLayout()); // Change layout for image display
 
@@ -233,7 +224,7 @@ public class InstagramProfileUI extends JFrame {
         contentPanel.add(backButton, BorderLayout.SOUTH);
 
         //add like count
-        contentPanel.add(displayLikeCount(picture), BorderLayout.NORTH);
+        contentPanel.add(displayLikeCount(post), BorderLayout.NORTH);
 
         revalidate();
         repaint();
