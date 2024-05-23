@@ -12,6 +12,12 @@ import java.util.UUID;
 @Entity(tableName = "Comments")
 public class CommentEntity {
 
+    public CommentEntity(Integer postId, String username, String commentText) {
+        this.postId = postId;
+        this.username = username;
+        this.commentText = commentText;
+    }
+
     @Id
     @Incremented
     @Column(name = "CommentID")

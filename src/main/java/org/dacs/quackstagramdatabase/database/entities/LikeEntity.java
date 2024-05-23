@@ -11,6 +11,12 @@ import java.util.UUID;
 @Data
 @Entity(tableName = "Likes")
 public class LikeEntity {
+
+    public LikeEntity(Integer postId, String username) {
+        this.postId = postId;
+        this.username = username;
+    }
+
     @Id
     @Column(name = "PostID")
     private Integer postId;
@@ -18,4 +24,7 @@ public class LikeEntity {
     @Id
     @Column(name = "Username")
     private String username;
+
+    @Column(name = "PostDate")
+    private Timestamp postTimestamp;
 }

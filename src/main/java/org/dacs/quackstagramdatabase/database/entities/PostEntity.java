@@ -12,6 +12,13 @@ import java.util.UUID;
 @Data
 @Entity(tableName = "Posts")
 public class PostEntity {
+
+    public PostEntity(String username, String caption, String mediaUrl) {
+        this.username = username;
+        this.caption = caption;
+        this.mediaUrl = mediaUrl;
+    }
+
     @Id
     @Incremented
     @Column(name = "PostID")

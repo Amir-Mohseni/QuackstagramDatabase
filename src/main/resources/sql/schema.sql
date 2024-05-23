@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS Credentials (
 CREATE TABLE IF NOT EXISTS Likes (
                                      PostID   INT              NOT NULL,
                                      Username VARCHAR(255)     NOT NULL,
+                                     LikeDate TIMESTAMP        DEFAULT CURRENT_TIMESTAMP NOT NULL,
                                      PRIMARY KEY (PostID, Username),
                                      CONSTRAINT Likes_ibfk_1 FOREIGN KEY (PostID) REFERENCES Posts (PostID),
                                      CONSTRAINT Likes_ibfk_2 FOREIGN KEY (Username) REFERENCES Users (Username)
