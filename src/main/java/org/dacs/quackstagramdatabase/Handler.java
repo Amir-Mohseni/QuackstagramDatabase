@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class Handler {
 
     @Getter
-    private static DataManager dataManager;
+    private DataManager dataManager;
 
     @Getter
     private static UIManager uiManager;
@@ -19,8 +19,11 @@ public class Handler {
     @Getter
     private static Util util;
 
+    public Handler(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+
     public void start() {
-        dataManager = new DataManager();
         uiManager = new UIManager();
         util = new Util();
 
