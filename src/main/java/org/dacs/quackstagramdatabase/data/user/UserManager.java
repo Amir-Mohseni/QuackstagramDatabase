@@ -10,6 +10,8 @@ import org.dacs.quackstagramdatabase.database.DatabaseConfig;
 import org.dacs.quackstagramdatabase.database.EntityManager;
 import org.dacs.quackstagramdatabase.database.entities.CredentialEntity;
 import org.dacs.quackstagramdatabase.database.entities.UserEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -18,7 +20,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+@Component
 public class UserManager {
+    private EntityManager entityManager;
+
+    @Autowired
+    public UserManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
 
     @Getter
     @Setter
@@ -26,8 +36,7 @@ public class UserManager {
 
     public User auth(String username, String password) {
         try {
-            DatabaseConfig dbConfig = new DatabaseConfig();
-            EntityManager entityManager = new EntityManager(dbConfig);
+            EntityManager entityManager = this.entityManager;
 
             List<Object> primaryKeys = new ArrayList<>();
             primaryKeys.add(username);

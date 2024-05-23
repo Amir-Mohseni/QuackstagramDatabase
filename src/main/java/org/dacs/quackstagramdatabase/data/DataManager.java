@@ -8,17 +8,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DataManager {
-
-    private EntityManager entityManager;
     private PostManager postManager;
     private UserManager userManager;
 
     @Autowired
-    public DataManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-
-        this.postManager = new PostManager(entityManager);
-        this.userManager = new UserManager(entityManager);
+    public DataManager(PostManager postManager, UserManager userManager) {
+        this.postManager = postManager;
+        this.userManager = userManager;
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::saveAll));
     }
