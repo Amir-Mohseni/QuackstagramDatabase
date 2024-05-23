@@ -14,4 +14,9 @@ public class CredentialEntity {
 
     @Column(name = "Password")
     private String passwordHash;
+
+    public CredentialEntity(String username, String password) {
+        this.username = username;
+        this.passwordHash = password;
+    }
 }

@@ -27,4 +27,10 @@ public class UserEntity {
 
     @Column(name = "PostsCount")
     private Integer postsCount;
+
+    public UserEntity(String username, String profilePicture, String bio) {
+        this.username = username;
+        this.profilePicture = profilePicture;
+        this.bio = bio;
+    }
 }
