@@ -25,6 +25,6 @@ public class LikeEntity {
     @Column(name = "Username")
     private String username;
 
-    @Column(name = "PostDate")
-    private Timestamp postTimestamp;
+    @Column(name = "LikeDate")
+    private Timestamp likeTimestamp;
 }
