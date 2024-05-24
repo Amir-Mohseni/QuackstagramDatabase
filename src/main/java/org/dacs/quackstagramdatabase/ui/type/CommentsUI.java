@@ -1,21 +1,28 @@
 package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
+import org.dacs.quackstagramdatabase.data.DataManager;
 import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.user.User;
 import org.dacs.quackstagramdatabase.database.entities.CommentEntity;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
 
 
-
+@Component
 public class CommentsUI extends JFrame {
+    private DataManager dataManager;
+
     Post post;
     JPanel contentPanel; // Declare contentPanel as a class-level variable to access it later
 
-    public CommentsUI(Post post) {
+    @Autowired
+    public CommentsUI(Post post, DataManager dataManager) {
+        this.dataManager = dataManager;
         this.post = post;
 
         setTitle("Comments");
@@ -73,7 +80,7 @@ public class CommentsUI extends JFrame {
         addCommentButton.addActionListener(e -> {
             String comment = commentField.getText();
             if (!comment.isEmpty()) {
-                User currentUser = Handler.getDataManager().forUsers().getCurrentUser();
+                User currentUser = dataManager.forUsers().getCurrentUser();
                 post.addComment(currentUser, comment);
                 // Update the content panel with the new comment
                 String commentText = currentUser.getUsername() + ": " + comment;

@@ -35,9 +35,7 @@ public class PostManager {
         post.setPostedByUsername(user.getUsername());
 
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            em.persist(new PostEntity(user.getUsername(), post.getCaption(), post.getExtension()));
+            entityManager.persist(new PostEntity(user.getUsername(), post.getCaption(), post.getExtension()));
 
         } catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);

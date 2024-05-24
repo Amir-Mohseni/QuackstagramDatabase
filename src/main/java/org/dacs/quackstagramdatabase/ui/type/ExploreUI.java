@@ -1,8 +1,11 @@
 package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
+import org.dacs.quackstagramdatabase.data.DataManager;
 import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,18 +15,24 @@ import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+@Component
 public class ExploreUI extends JFrame {
+    private DataManager dataManager;
 
 
     private static final int IMAGE_SIZE = UIUtil.WIDTH / 3; // Size for each image in the grid
 
-    public ExploreUI() {
+    @Autowired
+    public ExploreUI(DataManager dataManager) {
         setTitle("Explore");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         initializeUI();
+
+
+        this.dataManager = dataManager;
     }
 
     private void initializeUI() {
@@ -69,7 +78,7 @@ public class ExploreUI extends JFrame {
         JPanel imageGridPanel = new JPanel(new GridLayout(0, 3, 2, 2)); // 3 columns, auto rows
 
 
-        List<Post> posts = Handler.getDataManager().forPosts().getAsList();
+        List<Post> posts = dataManager.forPosts().getAsList();
         // Load images from the uploaded folder
 
         for (Post post : posts) {

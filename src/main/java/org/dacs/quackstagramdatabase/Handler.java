@@ -1,5 +1,6 @@
 package org.dacs.quackstagramdatabase;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.extern.apachecommons.CommonsLog;
 import org.dacs.quackstagramdatabase.data.DataManager;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@Data
 public class Handler {
 
     @Getter

@@ -1,5 +1,6 @@
 package org.dacs.quackstagramdatabase.data;
 
+import lombok.Data;
 import org.dacs.quackstagramdatabase.data.post.PostManager;
 import org.dacs.quackstagramdatabase.data.user.UserManager;
 import org.dacs.quackstagramdatabase.database.EntityManager;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@Data
 public class DataManager {
     private PostManager postManager;
     private UserManager userManager;
