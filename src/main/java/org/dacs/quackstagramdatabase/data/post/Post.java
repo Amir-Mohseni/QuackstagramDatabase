@@ -88,9 +88,8 @@ public class Post {
         List <CommentEntity> comments = new ArrayList<>();
 
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
 
-            List<CommentEntity> allComments = em.findAll(CommentEntity.class);
+            List<CommentEntity> allComments = entityManger.findAll(CommentEntity.class);
             for (CommentEntity comment : allComments) {
                 if (comment.getPostId().equals(postID)) {
                     comments.add(comment);
@@ -105,12 +104,10 @@ public class Post {
 
     public LocalDateTime getWhenPosted() {
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
             List<Object> primaryKeys = new ArrayList<>();
             primaryKeys.add(postID);
 
-            PostEntity postEntity = em.find(PostEntity.class, primaryKeys);
+            PostEntity postEntity = entityManger.find(PostEntity.class, primaryKeys);
             if(postEntity == null) // Post not found
                 return null;
 
@@ -129,9 +126,7 @@ public class Post {
 
     public int getLikesCount() {
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            PostEntity postEntity = em.find(PostEntity.class, Arrays.asList(postID));
+            PostEntity postEntity = entityManger.find(PostEntity.class, Arrays.asList(postID));
             return postEntity.getNumberOfLikes();
 
         } catch (SQLException | IllegalAccessException e) {
@@ -142,9 +137,8 @@ public class Post {
     public void addComment(User user, String commentText) {
         try {
             CommentEntity commentEntity = new CommentEntity(postID, user.getUsername(), commentText);
-            EntityManager em = new EntityManager(new DatabaseConfig());
 
-            em.persist(commentEntity);
+            entityManger.persist(commentEntity);
         } catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
@@ -152,9 +146,7 @@ public class Post {
 
     public boolean hasLiked(User user) {
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            return em.find(LikeEntity.class, Arrays.asList(postID, user.getUsername())) != null;
+            return entityManger.find(LikeEntity.class, Arrays.asList(postID, user.getUsername())) != null;
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -166,9 +158,8 @@ public class Post {
             return;
         try {
             LikeEntity likeEntity = new LikeEntity(postID, user.getUsername());
-            EntityManager em = new EntityManager(new DatabaseConfig());
 
-            em.persist(likeEntity);
+            entityManger.persist(likeEntity);
         } catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

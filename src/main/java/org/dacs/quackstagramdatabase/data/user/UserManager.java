@@ -41,9 +41,7 @@ public class UserManager {
 
     public List<User> getFollowers(User user) {
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
+            List<FollowsEntity> follows = UserManager.this.entityManager.findAll(FollowsEntity.class);
 
             return follows.stream()
                     .filter(follow -> follow.getFollowed().equals(user.getUsername()))
@@ -57,9 +55,9 @@ public class UserManager {
 
     public List<User> getFollowing(User user) {
         try {
-            EntityManager em = this.entityManager;
+            EntityManager entityManager = this.entityManager;
 
-            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
+            List<FollowsEntity> follows = UserManager.this.entityManager.findAll(FollowsEntity.class);
 
             return follows.stream()
                     .filter(follow -> follow.getFollower().equals(user.getUsername()))
@@ -78,10 +76,15 @@ public class UserManager {
             List<Object> primaryKeys = new ArrayList<>();
             primaryKeys.add(username);
 
-            User authenticatedUser = entityManager.find(User.class, primaryKeys);
-            if (authenticatedUser == null || !Handler.getUtil().matches(password, authenticatedUser.getHashedPassword())) {
-                authenticatedUser = null;
+            CredentialEntity credentialEntity = entityManager.find(CredentialEntity.class, primaryKeys);
+
+            UserEntity authenticatedUserEntity = entityManager.find(UserEntity.class, primaryKeys);
+            if (authenticatedUserEntity == null || !Handler.getUtil().matches(password, credentialEntity.getPasswordHash())) {
+                setCurrentUser(null);
+                return null;
             }
+
+            User authenticatedUser = new User(authenticatedUserEntity.getUsername(), credentialEntity.getPasswordHash(), authenticatedUserEntity.getBio(), authenticatedUserEntity.getProfilePicture());
 
             setCurrentUser(authenticatedUser);
             return authenticatedUser;
@@ -93,9 +96,6 @@ public class UserManager {
 
     public boolean exists(String username) {
         try {
-            DatabaseConfig dbConfig = new DatabaseConfig();
-            EntityManager entityManager = new EntityManager(dbConfig);
-
             List<Object> primaryKeys = new ArrayList<>();
             primaryKeys.add(username);
 
@@ -108,9 +108,7 @@ public class UserManager {
 
     public List<Post> getPostedPosts(User user) {
         try {
-            EntityManager em = this.entityManager;
-
-            List<PostEntity> postEntities = em.findAll(PostEntity.class);
+            List<PostEntity> postEntities = entityManager.findAll(PostEntity.class);
             List<Post> posts = new ArrayList<>();
 
             for (PostEntity postEntity : postEntities) {
@@ -152,12 +150,11 @@ public class UserManager {
 
     public User registerUser(String username, String password, String bio, String pfp_extention) {
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
             UserEntity userEntity = new UserEntity(username, pfp_extention, bio);
             CredentialEntity credentialEntity = new CredentialEntity(username, password);
 
-            em.persist(userEntity);
-            em.persist(credentialEntity);
+            entityManager.persist(userEntity);
+            entityManager.persist(credentialEntity);
 
             return new User(username, password, bio, pfp_extention);
         } catch (SQLException | IllegalAccessException e) {
@@ -167,9 +164,6 @@ public class UserManager {
 
     public User getByUsername(String username) {
         try {
-            DatabaseConfig dbConfig = new DatabaseConfig();
-            EntityManager entityManager = new EntityManager(dbConfig);
-
             List<Object> primaryKeys = new ArrayList<>();
             primaryKeys.add(username);
 

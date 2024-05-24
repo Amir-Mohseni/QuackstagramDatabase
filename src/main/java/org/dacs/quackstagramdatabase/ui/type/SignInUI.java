@@ -156,7 +156,7 @@ public class SignInUI extends JFrame {
                 this.uiManager.setCurrentFrame(profileUI);
             });
         } else {
-            System.out.println("User authentication failed.");
+            JOptionPane.showMessageDialog(this, "Invalid username or password. Please try again.");
         }
     }
 
