@@ -47,7 +47,7 @@ public class UIUtil {
         button.setBorder(BorderFactory.createEmptyBorder());
         button.setContentAreaFilled(false);
 
-        button.addActionListener(e -> uiManager.display(Objects.requireNonNull(UI.getByReference(buttonType))));
+        button.addActionListener(e -> uiManager.display(buttonType));
 
         return button;
     }

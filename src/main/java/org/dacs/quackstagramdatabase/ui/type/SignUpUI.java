@@ -116,7 +116,7 @@ public class SignUpUI extends JFrame {
         signInButton = new JButton("Already have an account? Sign In");
 
         signInButton.addActionListener(e -> {
-            uiManager.display(UI.SIGN_IN);
+            uiManager.display("sign_in");
         });
 
         registerPanel.add(signInButton, BorderLayout.SOUTH);
@@ -172,7 +172,7 @@ public class SignUpUI extends JFrame {
         registeredUser = userManager.registerUser(username, password, bio, pfp_extention);
         handleProfilePictureUpload(true);
 
-        this.uiManager.display(UI.SIGN_IN);
+        this.uiManager.display("sign_in");
     }
 
     // Method to handle profile picture upload

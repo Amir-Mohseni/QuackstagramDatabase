@@ -129,7 +129,7 @@ public class SignInUI extends JFrame {
     private void addRegisterButton() {
         // New button for navigating to main.ui.type.SignUpUI
         btnRegisterNow = new JButton("No Account? Register Now");
-        btnRegisterNow.addActionListener(e -> this.uiManager.display(UI.SIGN_UP));
+        btnRegisterNow.addActionListener(e -> this.uiManager.display("sign_up"));
         btnRegisterNow.setBackground(Color.WHITE); // Set a different color for distinction
         btnRegisterNow.setForeground(Color.BLACK);
         btnRegisterNow.setFocusPainted(false);
