@@ -99,7 +99,7 @@ public class UserManager {
             List<Object> primaryKeys = new ArrayList<>();
             primaryKeys.add(username);
 
-            return entityManager.find(User.class, primaryKeys) != null;
+            return entityManager.find(UserEntity.class, primaryKeys) != null;
         }
         catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -167,7 +167,10 @@ public class UserManager {
             List<Object> primaryKeys = new ArrayList<>();
             primaryKeys.add(username);
 
-            return entityManager.find(User.class, primaryKeys);
+            UserEntity userEntity = entityManager.find(UserEntity.class, primaryKeys);
+            CredentialEntity credentialEntity = entityManager.find(CredentialEntity.class, primaryKeys);
+
+            return new User(userEntity.getUsername(), credentialEntity.getPasswordHash(), userEntity.getBio(), userEntity.getProfilePicture());
         }
         catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);
