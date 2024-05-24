@@ -1,22 +1,27 @@
 package org.dacs.quackstagramdatabase.database.entities;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
 
-@Setter
-@Getter
+import java.sql.Timestamp;
+
+@Data
 @Entity(tableName = "Follows")
 public class FollowsEntity {
     @Id
     @Column(name = "FollowerUsername")
-    String follower;
+    private String follower;
 
     @Id
     @Column(name = "FollowedUsername")
-    String followed;
+    private String followed;
+
+    @Column(name = "FollowDate")
+    private Timestamp followDate;
 
     public FollowsEntity(String follower, String followed) {
         this.follower = follower;
