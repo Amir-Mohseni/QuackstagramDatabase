@@ -41,6 +41,7 @@ public class UIManager {
 
     public void display(String reference){
 //        currentFrame.dispose();
+        currentFrame.setVisible(false);
         JFrame newJFrame = switch (reference) {
             case "explore" -> this.applicationContext.getBean(ExploreUI.class);
             case "add" -> this.applicationContext.getBean(ImageUploadUI.class);
