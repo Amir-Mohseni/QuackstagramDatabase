@@ -3,7 +3,7 @@ package org.dacs.quackstagramdatabase.database;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
-import org.dacs.quackstagramdatabase.database.annotations.Incremented;
+import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -43,7 +43,7 @@ public class EntityManager {
         List<Object> values = new ArrayList<>();
 
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Incremented.class)) {
+            if (field.isAnnotationPresent(Column.class) && !field.isAnnotationPresent(Defaulted.class)) {
                 // get the field-level annotation @Column
                 Column column = field.getAnnotation(Column.class);
 
@@ -82,7 +82,7 @@ public class EntityManager {
                     for (Field field : clazz.getDeclaredFields()) {
                         // the field has to be @Id and @Incremented
                         // typically there is only one
-                        if (field.isAnnotationPresent(Id.class) && field.isAnnotationPresent(Incremented.class)) {
+                        if (field.isAnnotationPresent(Id.class) && field.isAnnotationPresent(Defaulted.class)) {
                             field.setAccessible(true);
                             field.set(entity, generatedKeys.getObject(1, field.getType()));
                         }

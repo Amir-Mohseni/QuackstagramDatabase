@@ -3,12 +3,12 @@ package org.dacs.quackstagramdatabase.database;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
-import org.dacs.quackstagramdatabase.database.annotations.Incremented;
+import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 
 @Entity(tableName = "TEST")
 public class DatabaseTest {
     @Id
-    @Incremented
+    @Defaulted
     @Column(name = "ID")
     private Integer id;
 

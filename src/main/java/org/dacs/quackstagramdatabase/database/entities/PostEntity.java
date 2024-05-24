@@ -4,10 +4,9 @@ import lombok.Data;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
-import org.dacs.quackstagramdatabase.database.annotations.Incremented;
+import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 
 @Data
 @Entity(tableName = "Posts")
@@ -20,7 +19,7 @@ public class PostEntity {
     }
 
     @Id
-    @Incremented
+    @Defaulted
     @Column(name = "PostID")
     private Integer postId;
 

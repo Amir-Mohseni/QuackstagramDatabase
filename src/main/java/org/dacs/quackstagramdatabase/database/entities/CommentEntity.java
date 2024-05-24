@@ -4,9 +4,7 @@ import lombok.Data;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
-import org.dacs.quackstagramdatabase.database.annotations.Incremented;
-
-import java.util.UUID;
+import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 
 @Data
 @Entity(tableName = "Comments")
@@ -19,7 +17,7 @@ public class CommentEntity {
     }
 
     @Id
-    @Incremented
+    @Defaulted
     @Column(name = "CommentID")
     private Integer commentId;
 
