@@ -1,7 +1,7 @@
 -- Users table
 CREATE TABLE IF NOT EXISTS Users (
                                      Username       VARCHAR(255)  NOT NULL PRIMARY KEY,
-                                     ProfilePicture BLOB          NOT NULL,
+                                     ProfilePicture TEXT          NOT NULL,
                                      Bio            TEXT          NULL,
                                      NumFollowers   INT           DEFAULT 0 NOT NULL,
                                      NumFollowing   INT           DEFAULT 0 NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Posts (
                                      PostID      INT              NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                      Username    VARCHAR(255)     NULL,
                                      Caption     TEXT             NULL,
-                                     MediaURL    BLOB             NULL,
+                                     MediaURL    TEXT             NULL,
                                      PostDate    TIMESTAMP        DEFAULT CURRENT_TIMESTAMP NULL,
                                      NumLikes    INT              DEFAULT 0 NULL,
                                      NumComments INT              DEFAULT 0 NULL,

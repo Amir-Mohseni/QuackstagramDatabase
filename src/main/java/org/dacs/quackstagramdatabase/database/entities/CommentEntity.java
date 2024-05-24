@@ -1,6 +1,7 @@
 package org.dacs.quackstagramdatabase.database.entities;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
@@ -8,6 +9,7 @@ import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 
 @Data
 @Entity(tableName = "Comments")
+@NoArgsConstructor
 public class CommentEntity {
 
     public CommentEntity(Integer postId, String username, String commentText) {

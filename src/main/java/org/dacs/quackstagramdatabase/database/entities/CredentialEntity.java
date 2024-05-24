@@ -1,12 +1,14 @@
 package org.dacs.quackstagramdatabase.database.entities;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
 
 @Data
 @Entity( tableName = "Credentials")
+@NoArgsConstructor
 public class CredentialEntity {
     @Id
     @Column(name = "Username")

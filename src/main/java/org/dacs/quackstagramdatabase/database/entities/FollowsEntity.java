@@ -2,6 +2,7 @@ package org.dacs.quackstagramdatabase.database.entities;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
@@ -12,6 +13,7 @@ import java.sql.Timestamp;
 
 @Data
 @Entity(tableName = "Follows")
+@NoArgsConstructor
 public class FollowsEntity {
     @Id
     @Column(name = "FollowerUsername")

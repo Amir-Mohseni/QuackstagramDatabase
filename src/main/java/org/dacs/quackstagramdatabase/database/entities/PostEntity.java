@@ -1,6 +1,7 @@
 package org.dacs.quackstagramdatabase.database.entities;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
@@ -10,6 +11,7 @@ import java.sql.Timestamp;
 
 @Data
 @Entity(tableName = "Posts")
+@NoArgsConstructor
 public class PostEntity {
 
     public PostEntity(String username, String caption, String mediaUrl) {
