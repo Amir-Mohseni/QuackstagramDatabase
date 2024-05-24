@@ -31,5 +31,6 @@ public class CommentEntity {
     private String commentText;
 
     @Column(name = "CommentDate")
+    @Defaulted
     private String commentDate;
 }

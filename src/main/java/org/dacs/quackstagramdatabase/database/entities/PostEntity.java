@@ -33,11 +33,14 @@ public class PostEntity {
     private String mediaUrl;
 
     @Column(name = "PostDate")
+    @Defaulted
     private Timestamp postTimestamp;
 
     @Column(name = "NumLikes")
+    @Defaulted
     private Integer numberOfLikes;
 
     @Column(name = "NumComments")
+    @Defaulted
     private Integer numberOfComments;
 }

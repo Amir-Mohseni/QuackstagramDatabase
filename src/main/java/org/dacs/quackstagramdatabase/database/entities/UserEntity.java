@@ -2,6 +2,7 @@ package org.dacs.quackstagramdatabase.database.entities;
 
 import lombok.Data;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
+import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
 
@@ -22,12 +23,15 @@ public class UserEntity {
     private String bio;
 
     @Column(name = "NumFollowers")
+    @Defaulted
     private Integer numberOfFollowers;
 
     @Column(name = "NumFollowing")
+    @Defaulted
     private Integer numberOfFollowing;
 
     @Column(name = "PostsCount")
+    @Defaulted
     private Integer postsCount;
 
     public UserEntity(String username, String profilePicture, String bio) {

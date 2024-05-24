@@ -2,6 +2,7 @@ package org.dacs.quackstagramdatabase.database.entities;
 
 import lombok.Data;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
+import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
 
@@ -26,5 +27,6 @@ public class LikeEntity {
     private String username;
 
     @Column(name = "LikeDate")
+    @Defaulted
     private Timestamp likeTimestamp;
 }
