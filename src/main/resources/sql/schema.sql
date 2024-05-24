@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS Likes (
 CREATE TABLE IF NOT EXISTS Follows (
                                        FollowerUsername VARCHAR(255) NOT NULL,
                                        FollowedUsername VARCHAR(255) NOT NULL,
+                                       FollowDate       TIMESTAMP    DEFAULT CURRENT_TIMESTAMP NOT NULL,
                                        PRIMARY KEY (FollowerUsername, FollowedUsername),
                                        CONSTRAINT Follows_ibfk_1 FOREIGN KEY (FollowerUsername) REFERENCES Users (Username),
                                        CONSTRAINT Follows_ibfk_2 FOREIGN KEY (FollowedUsername) REFERENCES Users (Username),
