@@ -3,6 +3,7 @@ package org.dacs.quackstagramdatabase.ui.type;
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.DataManager;
 import org.dacs.quackstagramdatabase.data.post.Post;
+import org.dacs.quackstagramdatabase.data.post.PostManager;
 import org.dacs.quackstagramdatabase.data.user.User;
 import org.dacs.quackstagramdatabase.database.entities.CommentEntity;
 import org.dacs.quackstagramdatabase.ui.UIManager;
@@ -19,15 +20,17 @@ public class CommentsUI extends JFrame {
     private final UIUtil uiUtil;
     private final DataManager dataManager;
     private final UIManager uiManager;
+    private final PostManager postManager;
 
     Post post;
     JPanel contentPanel; // Declare contentPanel as a class-level variable to access it later
 
     @Autowired
-    public CommentsUI(UIUtil uiUtil, DataManager dataManager, UIManager uiManager) {
+    public CommentsUI(UIUtil uiUtil, DataManager dataManager, UIManager uiManager, PostManager postManager) {
         this.uiUtil = uiUtil;
         this.dataManager = dataManager;
         this.uiManager = uiManager;
+        this.postManager = postManager;
 
         setTitle("Comments");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
@@ -72,7 +75,7 @@ public class CommentsUI extends JFrame {
     private void updateCommentsPanel() {
         contentPanel.removeAll(); // Clear existing comments
         //Iterate over the comments and add them to the panel key and value
-        for (CommentEntity comment: post.getComments()) {
+        for (CommentEntity comment: postManager.getComments(post)) {
             String commentText = comment.getUsername() + ": " + comment.getCommentText();
             JLabel commentLabel = new JLabel(commentText);
             commentLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
@@ -89,7 +92,7 @@ public class CommentsUI extends JFrame {
             String comment = commentField.getText();
             if (!comment.isEmpty()) {
                 User currentUser = dataManager.forUsers().getCurrentUser();
-                post.addComment(currentUser, comment);
+                postManager.addComment(currentUser, comment, post);
                 // Update the content panel with the new comment
                 String commentText = currentUser.getUsername() + ": " + comment;
                 JLabel newCommentLabel = new JLabel(commentText);

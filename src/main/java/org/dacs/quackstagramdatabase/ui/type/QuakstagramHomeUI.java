@@ -178,15 +178,15 @@ public class QuakstagramHomeUI extends JFrame {
 
     private void handleLikeAction(Post post, JLabel likesLabel) {
         User currentUser = userManager.getCurrentUser();
-        post.addLike(currentUser);
+        postManager.addLike(currentUser, post);
 
-        likesLabel.setText("Likes: " + post.getLikesCount());
+        likesLabel.setText("Likes: " + postManager.getLikesCount(post));
     }
 
     private void displayImage(Post post) {
         imageViewPanel.removeAll(); // Clear previous content
 
-        JLabel likesLabel = new JLabel("Likes: " + post.getLikesCount()); // Update this line
+        JLabel likesLabel = new JLabel("Likes: " + postManager.getLikesCount(post)); // Update this line
 
         // Display the image
         JLabel fullSizeImageLabel = new JLabel();

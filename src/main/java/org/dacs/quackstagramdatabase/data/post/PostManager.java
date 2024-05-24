@@ -4,6 +4,7 @@ import org.dacs.quackstagramdatabase.data.DataManager;
 import org.dacs.quackstagramdatabase.data.user.User;
 import org.dacs.quackstagramdatabase.database.DatabaseConfig;
 import org.dacs.quackstagramdatabase.database.EntityManager;
+import org.dacs.quackstagramdatabase.database.entities.CommentEntity;
 import org.dacs.quackstagramdatabase.database.entities.LikeEntity;
 import org.dacs.quackstagramdatabase.database.entities.PostEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class PostManager {
@@ -79,6 +77,29 @@ public class PostManager {
         return this.dataManager.forUsers().getByUsername(post.getPostedByUsername());
     }
 
+
+    public LocalDateTime getWhenPosted(Post post) {
+        try {
+            List<Object> primaryKeys = new ArrayList<>();
+            primaryKeys.add(post.getPostID());
+
+            PostEntity postEntity = entityManager.find(PostEntity.class, primaryKeys);
+            if(postEntity == null) // Post not found
+                return null;
+
+            // Parse the timestamp using formater and LocalDateTime
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            Timestamp timestamp = postEntity.getPostTimestamp();
+
+            return timestamp.toLocalDateTime(); // Convert to LocalDateTime
+        } catch (SQLException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//        return LocalDateTime.parse(timePosted, formatter);
+    }
+
     public HashMap<User, LocalDateTime> getLikesData(Post post){
         HashMap<User, LocalDateTime> map = new HashMap<>();
 
@@ -102,6 +123,67 @@ public class PostManager {
         }
 
         return map;
+    }
+
+
+
+    public List<CommentEntity> getComments(Post post){
+        List <CommentEntity> comments = new ArrayList<>();
+
+        try {
+
+            List<CommentEntity> allComments = entityManager.findAll(CommentEntity.class);
+            for (CommentEntity comment : allComments) {
+                if (comment.getPostId().equals(post.getPostID())) {
+                    comments.add(comment);
+                }
+            }
+
+        } catch (SQLException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return comments;
+    }
+
+    public int getLikesCount(Post post) {
+        try {
+            PostEntity postEntity = entityManager.find(PostEntity.class, Arrays.asList(post.getPostID()));
+            return postEntity.getNumberOfLikes();
+
+        } catch (SQLException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addComment(User user, String commentText, Post post) {
+        try {
+            CommentEntity commentEntity = new CommentEntity(post.getPostID(), user.getUsername(), commentText);
+
+            entityManager.persist(commentEntity);
+        } catch (SQLException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean hasLiked(User user, Post post) {
+        try {
+            return entityManager.find(LikeEntity.class, Arrays.asList(post.getPostID(), user.getUsername())) != null;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addLike(User user, Post post) {
+        if(hasLiked(user, post))
+            return;
+        try {
+            LikeEntity likeEntity = new LikeEntity(post.getPostID(), user.getUsername());
+
+            entityManager.persist(likeEntity);
+        } catch (SQLException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 //    private void load(){

@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 @org.springframework.stereotype.Component
 public class InstagramProfileUI extends JFrame {
     private final UserManager userManager;
+    private final PostManager postManager;
 
     private static final int PROFILE_IMAGE_SIZE = 80; // Adjusted size for the profile image to match UI
     private static final int GRID_IMAGE_SIZE = UIUtil.WIDTH / 3; // Static size for grid images
@@ -36,8 +37,9 @@ public class InstagramProfileUI extends JFrame {
     private User currentUser; // User object to store the current user's information
 
     @Autowired
-    public InstagramProfileUI(UIUtil uiUtil, UIManager uiManager, UserManager userManager) {
+    public InstagramProfileUI(UIUtil uiUtil, UIManager uiManager, UserManager userManager, PostManager postManager) {
         this.userManager = userManager;
+        this.postManager = postManager;
         uiManager.intializeProfileUI(this);
 
         //This is a workaround so the magnificent UI manager works properly
@@ -205,7 +207,7 @@ public class InstagramProfileUI extends JFrame {
         likePanel.setLayout(new BoxLayout(likePanel, BoxLayout.Y_AXIS));
         likePanel.setBackground(new Color(249, 249, 249));
 
-        JLabel likesLabel = new JLabel("Likes: " + post.getLikesCount());
+        JLabel likesLabel = new JLabel("Likes: " + postManager.getLikesCount(post));
         likesLabel.setFont(new Font("Arial", Font.BOLD, 12));
         likesLabel.setForeground(Color.BLACK);
         likePanel.add(likesLabel);

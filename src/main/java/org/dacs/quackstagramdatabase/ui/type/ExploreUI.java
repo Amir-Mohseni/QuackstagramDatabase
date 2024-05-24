@@ -138,7 +138,7 @@ public class ExploreUI extends JFrame {
         JPanel imageViewerPanel = new JPanel(new BorderLayout());
 
         // Calculate time since posting
-        long days = ChronoUnit.DAYS.between(post.getWhenPosted(), LocalDateTime.now());
+        long days = ChronoUnit.DAYS.between(postManager.getWhenPosted(post), LocalDateTime.now());
         String timeSincePosting = days + " day" + (days != 1 ? "s" : "") + " ago";
 
         // Top panel for username and time since posting
@@ -159,7 +159,7 @@ public class ExploreUI extends JFrame {
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JTextArea bioTextArea = new JTextArea(post.getCaption());
         bioTextArea.setEditable(false);
-        JLabel likesLabel = new JLabel("Likes: " + post.getLikesCount());
+        JLabel likesLabel = new JLabel("Likes: " + postManager.getLikesCount(post));
         bottomPanel.add(bioTextArea, BorderLayout.CENTER);
         bottomPanel.add(likesLabel, BorderLayout.SOUTH);
 
