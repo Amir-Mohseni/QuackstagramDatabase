@@ -18,12 +18,14 @@ import java.util.List;
 @Component
 public class SearchBar {
     private final UserManager userManager;
+    private final EntityManager entityManager;
 
     List<User> results;
 
     @Autowired
-    public SearchBar(UserManager userManager) {
+    public SearchBar(UserManager userManager, EntityManager entityManager) {
         this.userManager = userManager;
+        this.entityManager = entityManager;
     }
 
     public List<User> search(String query){
@@ -46,8 +48,7 @@ public class SearchBar {
 
     public List<User> getAllUsers() {
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-            List <UserEntity> userEntities = em.findAll(UserEntity.class);
+            List <UserEntity> userEntities = entityManager.findAll(UserEntity.class);
             List <User> users = new ArrayList<>();
 
             for (UserEntity userEntity : userEntities) {

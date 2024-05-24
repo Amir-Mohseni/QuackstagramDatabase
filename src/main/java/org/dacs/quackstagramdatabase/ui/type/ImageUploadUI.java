@@ -25,6 +25,7 @@ public class ImageUploadUI extends JFrame {
     private final UIManager uiManager;
     private final UserManager userManager;
     private final PostManager postManager;
+    private final EntityManager entityManager;
 
     private static final int PROFILE_IMAGE_SIZE = 80; // Adjusted size for the profile image to match UI
     private static final int GRID_IMAGE_SIZE = UIUtil.WIDTH / 3; // Static size for grid images
@@ -34,11 +35,12 @@ public class ImageUploadUI extends JFrame {
     private JButton saveButton;
 
     @Autowired
-    public ImageUploadUI(UIUtil uiUtil, UIManager uiManager, UserManager userManager, PostManager postManager) {
+    public ImageUploadUI(UIUtil uiUtil, UIManager uiManager, UserManager userManager, PostManager postManager, EntityManager entityManager) {
         this.uiUtil = uiUtil;
         this.uiManager = uiManager;
         this.userManager = userManager;
         this.postManager = postManager;
+        this.entityManager = entityManager;
         setTitle("Upload Image");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
@@ -143,10 +145,9 @@ public class ImageUploadUI extends JFrame {
 
     private Post createNewPost(User user, File selectedFile) {
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
             PostEntity postEntity = new PostEntity(user.getUsername(), bioTextArea.getText(), Handler.getUtil().getFileExtension(selectedFile));
 
-            em.persist(postEntity);
+            entityManager.persist(postEntity);
 
             Post post = new Post(
                     postEntity.getPostId(),

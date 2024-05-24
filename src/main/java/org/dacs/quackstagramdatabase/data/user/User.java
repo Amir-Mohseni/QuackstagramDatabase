@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 // Represents a user on Quackstagram
+
 public class User  {
     // Getter methods for user details
     @Getter
@@ -112,7 +113,7 @@ public class User  {
 
         try {
             BufferedImage image = ImageIO.read(file);
-            File outputFile = Paths.get("img", "storage.profile",  username + "." + getExtension()).toFile();
+            File outputFile = Paths.get("img", "storage", "profile",  username + "." + getExtension()).toFile();
             ImageIO.write(image, getExtension(), outputFile);
         } catch (IOException e) {
             throw new RuntimeException(e);

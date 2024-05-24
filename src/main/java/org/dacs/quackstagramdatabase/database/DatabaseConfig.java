@@ -28,7 +28,9 @@ public class DatabaseConfig {
 
     @PreDestroy
     public void onDestroy() throws SQLException {
-        this.connection.commit();
-        this.connection.close();
+        if (this.connection != null && !this.connection.isClosed()) {
+            this.connection.commit();
+            this.connection.close();
+        }
     }
 }

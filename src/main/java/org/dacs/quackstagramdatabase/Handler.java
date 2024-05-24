@@ -22,7 +22,6 @@ public class Handler {
     @Getter
     private static Util util;
 
-    @Autowired
     public Handler(DataManager dataManager, UIManager uiManager) {
         this.dataManager = dataManager;
         this.uiManager = uiManager;

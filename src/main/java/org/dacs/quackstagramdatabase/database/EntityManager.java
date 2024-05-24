@@ -20,7 +20,7 @@ import java.util.List;
 public class EntityManager {
     private final Connection connection;
 
-    public EntityManager(DatabaseConfig databaseConfig) throws SQLException {
+    public EntityManager(DatabaseConfig databaseConfig) throws SQLException, ClassNotFoundException {
         this.connection = databaseConfig.getConnection();
         this.connection.setAutoCommit(false);
     }
@@ -67,7 +67,7 @@ public class EntityManager {
 
         // now insert the actual values into the SQL string
         // first convert the SQL string to a PreparedStatement
-        try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             for (int i = 0; i < values.size(); i++) {
                 preparedStatement.setObject(i+1, values.get(i));
             }
@@ -77,12 +77,12 @@ public class EntityManager {
             // Handle generated keys
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 // get the first generated key. There should be only 1 for our case
-                if (generatedKeys.next()) {
+                while (generatedKeys.next()) {
                     // iterate through the fields of the entity class
                     for (Field field : clazz.getDeclaredFields()) {
                         // the field has to be @Id and @Incremented
                         // typically there is only one
-                        if (field.isAnnotationPresent(Id.class) && field.isAnnotationPresent(Defaulted.class)) {
+                        if (field.isAnnotationPresent(Defaulted.class)) {
                             field.setAccessible(true);
                             field.set(entity, generatedKeys.getObject(1, field.getType()));
                         }

@@ -57,9 +57,7 @@ public class PostManager {
     public List<User> getLikes(Post post) {
         List<User> likes = new ArrayList<>();
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<LikeEntity> allLikes = em.findAll(LikeEntity.class);
+            List<LikeEntity> allLikes = entityManager.findAll(LikeEntity.class);
             for (LikeEntity like : allLikes) {
                 if (like.getPostId().equals(post.getPostID())) {
                     likes.add(this.dataManager.forUsers().getByUsername(like.getUsername()));
@@ -106,9 +104,7 @@ public class PostManager {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<LikeEntity> allLikes = em.findAll(LikeEntity.class);
+            List<LikeEntity> allLikes = entityManager.findAll(LikeEntity.class);
             for (LikeEntity like : allLikes) {
                 if (like.getPostId().equals(post.getPostID())) {
                     User user = this.dataManager.forUsers().getByUsername(like.getUsername());
