@@ -3,7 +3,9 @@ package org.dacs.quackstagramdatabase.ui.type;
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.search.SearchBar;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.ui.UIManager;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,14 +26,25 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@Component
 public class SearchUI extends JFrame {
-    public SearchUI() {
+    private final UIUtil uiUtil;
+    private final SearchBar searchBar;
+    private final InstagramProfileUI profileUI;
+    private final UIManager uiManager;
+
+    public SearchUI(UIUtil uiUtil, SearchBar searchBar, InstagramProfileUI profileUI, UIManager uiManager) {
+        this.uiUtil = uiUtil;
+        this.uiManager = uiManager;
         setTitle("Search");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         initializeUI();
+
+        this.searchBar = searchBar;
+        this.profileUI = profileUI;
     }
 
     private void initializeUI() {
@@ -40,7 +53,7 @@ public class SearchUI extends JFrame {
         setLayout(new BorderLayout()); // Reset the layout manager
 
         JPanel headerPanel = createHeaderPanel(); // Method from your main.ui.type.InstagramProfileUI class
-        JPanel navigationPanel = UIUtil.createNavigationPanel(); // Method from your main.ui.type.InstagramProfileUI class
+        JPanel navigationPanel = uiUtil.createNavigationPanel(uiManager); // Method from your main.ui.type.InstagramProfileUI class
         JPanel mainContentPanel = createMainContentPanel();
 
         // Add panels to the frame
@@ -93,7 +106,6 @@ public class SearchUI extends JFrame {
         resultPanel.revalidate();
         resultPanel.repaint();
 
-        SearchBar searchBar = new SearchBar();
         List<User> results = searchBar.search(query);
 
         if (results.isEmpty()) {
@@ -116,10 +128,9 @@ public class SearchUI extends JFrame {
                     public void mouseClicked(MouseEvent e) {
                         super.mouseClicked(e);
                         //Open the profile of the user when the user panel is clicked
-                        InstagramProfileUI profileUI = new InstagramProfileUI();
                         profileUI.setCurrentUser(user);
                         profileUI.setVisible(true);
-                        Handler.getUiManager().setCurrentFrame(profileUI);
+                        uiManager.setCurrentFrame(profileUI);
                         dispose(); // Close the current frame
                     }
                 });

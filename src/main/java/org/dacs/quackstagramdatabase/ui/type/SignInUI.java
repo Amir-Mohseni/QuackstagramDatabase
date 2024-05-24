@@ -1,9 +1,13 @@
 package org.dacs.quackstagramdatabase.ui.type;
 
+import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.data.user.UserManager;
 import org.dacs.quackstagramdatabase.ui.UI;
+import org.dacs.quackstagramdatabase.ui.UIManager;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,8 +18,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-
+@Component
 public class SignInUI extends JFrame {
+
+    private final UserManager userManager;
+
+    @Setter
+    private UIManager uiManager;
 
 
     private JTextField txtUsername;
@@ -24,16 +33,16 @@ public class SignInUI extends JFrame {
     private JLabel lblPhoto;
 
 
-    public SignInUI() {
+    public SignInUI(UserManager userManager) {
+        this.userManager = userManager;
         setTitle("Quackstagram - Register");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
-        initializeUI();
     }
 
-    private void initializeUI() {
+    public void initializeUI(InstagramProfileUI profileUI) {
         // Header with the Register label
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerPanel.setBackground(new Color(51, 51, 51)); // Set a darker background for the header
@@ -64,7 +73,9 @@ public class SignInUI extends JFrame {
 
         // Register button with black text
         btnSignIn = new JButton("Sign-In");
-        btnSignIn.addActionListener(this::onSignInClicked);
+        btnSignIn.addActionListener(e -> {
+            this.onSignInClicked(e, profileUI);
+        });
         btnSignIn.setBackground(new Color(255, 90, 95)); // Use a red color that matches the mockup
         btnSignIn.setForeground(Color.BLACK); // Set the text color to black
         btnSignIn.setFocusPainted(false);
@@ -118,20 +129,20 @@ public class SignInUI extends JFrame {
     private void addRegisterButton() {
         // New button for navigating to main.ui.type.SignUpUI
         btnRegisterNow = new JButton("No Account? Register Now");
-        btnRegisterNow.addActionListener(e -> Handler.getUiManager().display(UI.SIGN_UP));
+        btnRegisterNow.addActionListener(e -> this.uiManager.display(UI.SIGN_UP));
         btnRegisterNow.setBackground(Color.WHITE); // Set a different color for distinction
         btnRegisterNow.setForeground(Color.BLACK);
         btnRegisterNow.setFocusPainted(false);
         btnRegisterNow.setBorderPainted(false);
     }
 
-    private void onSignInClicked(ActionEvent event) {
+    private void onSignInClicked(ActionEvent event, InstagramProfileUI profileUI) {
         String enteredUsername = txtUsername.getText();
         String enteredPassword = txtPassword.getText();
 
         System.out.println(enteredUsername + " <-> " + enteredPassword);
 
-        User user = Handler.getDataManager().forUsers().auth(enteredUsername, enteredPassword);
+        User user = this.userManager.auth(enteredUsername, enteredPassword);
 
         if (user != null) {
             System.out.println("User authentication succeeded.");
@@ -140,10 +151,9 @@ public class SignInUI extends JFrame {
             dispose();
 
             SwingUtilities.invokeLater(() -> {
-                InstagramProfileUI profileUI = new InstagramProfileUI();
                 profileUI.setCurrentUser(user);
                 profileUI.setVisible(true);
-                Handler.getUiManager().setCurrentFrame(profileUI);
+                this.uiManager.setCurrentFrame(profileUI);
             });
         } else {
             System.out.println("User authentication failed.");

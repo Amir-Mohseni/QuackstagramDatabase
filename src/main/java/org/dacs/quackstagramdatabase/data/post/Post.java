@@ -84,50 +84,6 @@ public class Post {
         return imageIcon;
     }
 
-    public List<User> getLikes() {
-        List<User> likes = new ArrayList<>();
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<LikeEntity> allLikes = em.findAll(LikeEntity.class);
-            for (LikeEntity like : allLikes) {
-                if (like.getPostId().equals(postID)) {
-                    likes.add(Handler.getDataManager().forUsers().getByUsername(like.getUsername()));
-                }
-            }
-
-        } catch (SQLException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        return likes;
-    }
-
-    public HashMap<User, LocalDateTime> getLikesData(){
-        HashMap<User, LocalDateTime> map = new HashMap<>();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<LikeEntity> allLikes = em.findAll(LikeEntity.class);
-            for (LikeEntity like : allLikes) {
-                if (like.getPostId().equals(postID)) {
-                    User user = Handler.getDataManager().forUsers().getByUsername(like.getUsername());
-                    Timestamp timestamp = like.getLikeTimestamp();
-                    LocalDateTime likeTime = timestamp.toLocalDateTime();
-                    map.put(user, likeTime);
-                }
-            }
-
-        } catch (SQLException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        return map;
-    }
-
     public List<CommentEntity> getComments(){
         List <CommentEntity> comments = new ArrayList<>();
 
@@ -181,10 +137,6 @@ public class Post {
         } catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public User getPostedBy() {
-        return Handler.getDataManager().forUsers().getByUsername(getPostedByUsername());
     }
 
     public void addComment(User user, String commentText) {

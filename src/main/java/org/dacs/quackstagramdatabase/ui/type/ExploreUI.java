@@ -3,6 +3,8 @@ package org.dacs.quackstagramdatabase.ui.type;
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.DataManager;
 import org.dacs.quackstagramdatabase.data.post.Post;
+import org.dacs.quackstagramdatabase.data.post.PostManager;
+import org.dacs.quackstagramdatabase.ui.UIManager;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,13 +19,22 @@ import java.util.List;
 
 @Component
 public class ExploreUI extends JFrame {
-    private DataManager dataManager;
-
+    private final UIUtil uiUtil;
+    private final PostManager postManager;
+    private final SearchUI searchUI;
+    private final InstagramProfileUI profileUI;
+    private final UIManager uiManager;
 
     private static final int IMAGE_SIZE = UIUtil.WIDTH / 3; // Size for each image in the grid
 
     @Autowired
-    public ExploreUI(DataManager dataManager) {
+    public ExploreUI(UIUtil uiUtil, PostManager postManager, SearchUI searchUI, InstagramProfileUI profileUI, UIManager uiManager) {
+        this.uiUtil = uiUtil;
+        this.postManager = postManager;
+        this.searchUI = searchUI;
+        this.profileUI = profileUI;
+        this.uiManager = uiManager;
+
         setTitle("Explore");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
@@ -31,8 +42,6 @@ public class ExploreUI extends JFrame {
         setLayout(new BorderLayout());
         initializeUI();
 
-
-        this.dataManager = dataManager;
     }
 
     private void initializeUI() {
@@ -41,7 +50,7 @@ public class ExploreUI extends JFrame {
         setLayout(new BorderLayout()); // Reset the layout manager
 
         JPanel headerPanel = createHeaderPanel(); // Method from your main.ui.type.InstagramProfileUI class
-        JPanel navigationPanel = UIUtil.createNavigationPanel(); // Method from your main.ui.type.InstagramProfileUI class
+        JPanel navigationPanel = uiUtil.createNavigationPanel(uiManager); // Method from your main.ui.type.InstagramProfileUI class
         JPanel mainContentPanel = createMainContentPanel();
 
         // Add panels to the frame
@@ -67,9 +76,8 @@ public class ExploreUI extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 searchField.setText("");
-                SearchUI searchUI = new SearchUI();
                 searchUI.setVisible(true);
-                Handler.getUiManager().setCurrentFrame(searchUI);
+                uiManager.setCurrentFrame(searchUI);
                 dispose(); // Close the current frame
             }
         });
@@ -78,7 +86,7 @@ public class ExploreUI extends JFrame {
         JPanel imageGridPanel = new JPanel(new GridLayout(0, 3, 2, 2)); // 3 columns, auto rows
 
 
-        List<Post> posts = dataManager.forPosts().getAsList();
+        List<Post> posts = postManager.getAsList();
         // Load images from the uploaded folder
 
         for (Post post : posts) {
@@ -125,7 +133,7 @@ public class ExploreUI extends JFrame {
 
         // Add the header and navigation panels back
         add(createHeaderPanel(), BorderLayout.NORTH);
-        add(UIUtil.createNavigationPanel(), BorderLayout.SOUTH);
+        add(uiUtil.createNavigationPanel(uiManager), BorderLayout.SOUTH);
 
         JPanel imageViewerPanel = new JPanel(new BorderLayout());
 
@@ -135,7 +143,7 @@ public class ExploreUI extends JFrame {
 
         // Top panel for username and time since posting
         JPanel topPanel = new JPanel(new BorderLayout());
-        JButton usernameLabel = new JButton(post.getPostedBy().getUsername());
+        JButton usernameLabel = new JButton(postManager.getPostedBy(post).getUsername());
         JLabel timeLabel = new JLabel(timeSincePosting);
         timeLabel.setHorizontalAlignment(JLabel.RIGHT);
         topPanel.add(usernameLabel, BorderLayout.WEST);
@@ -162,7 +170,7 @@ public class ExploreUI extends JFrame {
 
         // Re-add the header and navigation panels
         add(createHeaderPanel(), BorderLayout.NORTH);
-        add(UIUtil.createNavigationPanel(), BorderLayout.SOUTH);
+        add(uiUtil.createNavigationPanel(uiManager), BorderLayout.SOUTH);
 
         // Panel for the back button
         JPanel backButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -177,16 +185,15 @@ public class ExploreUI extends JFrame {
             getContentPane().removeAll();
             add(createHeaderPanel(), BorderLayout.NORTH);
             add(createMainContentPanel(), BorderLayout.CENTER);
-            add(UIUtil.createNavigationPanel(), BorderLayout.SOUTH);
+            add(uiUtil.createNavigationPanel(uiManager), BorderLayout.SOUTH);
             revalidate();
             repaint();
         });
 
         usernameLabel.addActionListener(e -> {
-            InstagramProfileUI profileUI = new InstagramProfileUI();
-            profileUI.setCurrentUser(post.getPostedBy());
+            profileUI.setCurrentUser(postManager.getPostedBy(post));
             profileUI.setVisible(true);
-            Handler.getUiManager().setCurrentFrame(profileUI);
+            this.uiManager.setCurrentFrame(profileUI);
             dispose(); // Close the current frame
         });
 

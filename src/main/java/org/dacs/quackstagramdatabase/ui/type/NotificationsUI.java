@@ -2,7 +2,11 @@ package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.data.user.UserManager;
+import org.dacs.quackstagramdatabase.ui.UIManager;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +20,17 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Objects;
 
+@Component
 public class NotificationsUI extends JFrame {
+    private final UIUtil uiUtil;
+    private final UIManager uiManager;
+    private UserManager userManager;
 
-    public NotificationsUI() {
+    @Autowired
+    public NotificationsUI(UIUtil uiUtil, UIManager uiManager, UserManager userManager) {
+        this.uiUtil = uiUtil;
+        this.uiManager = uiManager;
+        this.userManager = userManager;
         setTitle("Notifications");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
@@ -30,7 +42,7 @@ public class NotificationsUI extends JFrame {
     private void initializeUI() {
         // Reuse the header and navigation panel creation methods from the main.ui.type.InstagramProfileUI class
         JPanel headerPanel = createHeaderPanel();
-        JPanel navigationPanel = UIUtil.createNavigationPanel();
+        JPanel navigationPanel = uiUtil.createNavigationPanel(uiManager);
 
         // Content Panel for notifications
         JPanel contentPanel = new JPanel();
@@ -39,8 +51,8 @@ public class NotificationsUI extends JFrame {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        User currentUser = Handler.getDataManager().forUsers().getCurrentUser();
-        for(Map.Entry<User, LocalDateTime> entry : currentUser.getNotificationsSorted().entrySet()){
+        User currentUser = this.userManager.getCurrentUser();
+        for(Map.Entry<User, LocalDateTime> entry : this.userManager.getNotificationsSorted(currentUser).entrySet()){
 
             String notificationMessage = entry.getKey().getUsername() + " liked your picture - " + getElapsedTime(entry.getValue()) + " ago";
 

@@ -2,7 +2,10 @@ package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.post.Post;
+import org.dacs.quackstagramdatabase.data.post.PostManager;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.data.user.UserManager;
+import org.dacs.quackstagramdatabase.ui.UIManager;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 
 import javax.swing.*;
@@ -14,7 +17,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+@org.springframework.stereotype.Component
 public class QuakstagramHomeUI extends JFrame {
+    private final UIUtil uiUtil;
+    private final UserManager userManager;
+    private final PostManager postManager;
+    private final UIManager uiManager;
+
     private static final int IMAGE_WIDTH = UIUtil.WIDTH - 100; // Width for the image posts
     private static final int IMAGE_HEIGHT = 150; // Height for the image posts
     private static final Color LIKE_BUTTON_COLOR = new Color(255, 90, 95); // Color for the like button
@@ -23,8 +32,15 @@ public class QuakstagramHomeUI extends JFrame {
     private JPanel homePanel;
     private JPanel imageViewPanel;
 
+    private CommentsUI commentsUI;
 
-    public QuakstagramHomeUI() {
+    public QuakstagramHomeUI(UIUtil uiUtil, UserManager userManager, PostManager postManager, UIManager uiManager, CommentsUI commentsUI) {
+        this.uiUtil = uiUtil;
+        this.userManager = userManager;
+        this.postManager = postManager;
+        this.uiManager = uiManager;
+        this.commentsUI = commentsUI;
+
         setTitle("Quakstagram Home");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
@@ -50,7 +66,7 @@ public class QuakstagramHomeUI extends JFrame {
         add(headerPanel, BorderLayout.NORTH);
 
 
-        add(UIUtil.createNavigationPanel(), BorderLayout.SOUTH);
+        add(uiUtil.createNavigationPanel(uiManager), BorderLayout.SOUTH);
     }
 
     private void initializeUI() {
@@ -72,10 +88,10 @@ public class QuakstagramHomeUI extends JFrame {
     }
 
     private void populateContentPanel(JPanel panel) {
-        User currentUser = Handler.getDataManager().forUsers().getCurrentUser();
+        User currentUser = this.userManager.getCurrentUser();
 
-        for(User user : currentUser.getFollowing())
-            for(Post post : user.getPostedPosts()){
+        for(User user : this.userManager.getFollowing(currentUser))
+            for(Post post : this.userManager.getPostedPosts(user)){
 
                 JPanel itemPanel = new JPanel();
                 itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.Y_AXIS));
@@ -101,7 +117,7 @@ public class QuakstagramHomeUI extends JFrame {
                 JLabel descriptionLabel = new JLabel(post.getCaption());
                 descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-                JLabel likesLabel = new JLabel("Likes: " + post.getLikes().size());
+                JLabel likesLabel = new JLabel("Likes: " + this.postManager.getLikes(post).size());
                 likesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
                 JButton likeButton = getLikeButton(post, likesLabel);
@@ -161,7 +177,7 @@ public class QuakstagramHomeUI extends JFrame {
     }
 
     private void handleLikeAction(Post post, JLabel likesLabel) {
-        User currentUser = Handler.getDataManager().forUsers().getCurrentUser();
+        User currentUser = userManager.getCurrentUser();
         post.addLike(currentUser);
 
         likesLabel.setText("Likes: " + post.getLikesCount());
@@ -185,7 +201,7 @@ public class QuakstagramHomeUI extends JFrame {
         //User Info 
         JPanel userPanel = new JPanel();
         userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
-        JLabel userName = new JLabel(post.getPostedBy().getUsername());
+        JLabel userName = new JLabel(this.postManager.getPostedBy(post).getUsername());
         userName.setFont(new Font("Arial", Font.BOLD, 18));
         userPanel.add(userName);//User Name
 
@@ -204,12 +220,10 @@ public class QuakstagramHomeUI extends JFrame {
 
         //View Comments
         JButton viewComments = new JButton("View Comments");
-        viewComments.addActionListener(new ActionListener() {
-                                           @Override
-                                           public void actionPerformed(ActionEvent e) {
-                                                  new CommentsUI(post).setVisible(true);
-                                           }
-                                       });
+        viewComments.addActionListener(e -> {
+            this.commentsUI.loadPost(post);
+            this.commentsUI.setVisible(true);
+        });
 
         userPanel.add(viewComments);
 
@@ -218,7 +232,7 @@ public class QuakstagramHomeUI extends JFrame {
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.add(new JLabel(post.getCaption())); // Description
-        infoPanel.add(new JLabel("Likes:" + post.getLikes().size())); // Likes
+        infoPanel.add(new JLabel("Likes:" + postManager.getLikes(post).size())); // Likes
         infoPanel.add(likeButton);
 
 

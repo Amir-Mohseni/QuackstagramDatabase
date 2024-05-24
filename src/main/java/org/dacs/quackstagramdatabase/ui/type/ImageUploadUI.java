@@ -2,11 +2,15 @@ package org.dacs.quackstagramdatabase.ui.type;
 
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.post.Post;
+import org.dacs.quackstagramdatabase.data.post.PostManager;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.data.user.UserManager;
 import org.dacs.quackstagramdatabase.database.DatabaseConfig;
 import org.dacs.quackstagramdatabase.database.EntityManager;
 import org.dacs.quackstagramdatabase.database.entities.PostEntity;
+import org.dacs.quackstagramdatabase.ui.UIManager;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -15,7 +19,12 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.sql.SQLException;
 
+@org.springframework.stereotype.Component
 public class ImageUploadUI extends JFrame {
+    private final UIUtil uiUtil;
+    private final UIManager uiManager;
+    private final UserManager userManager;
+    private final PostManager postManager;
 
     private static final int PROFILE_IMAGE_SIZE = 80; // Adjusted size for the profile image to match UI
     private static final int GRID_IMAGE_SIZE = UIUtil.WIDTH / 3; // Static size for grid images
@@ -24,7 +33,12 @@ public class ImageUploadUI extends JFrame {
     private JButton uploadButton;
     private JButton saveButton;
 
-    public ImageUploadUI() {
+    @Autowired
+    public ImageUploadUI(UIUtil uiUtil, UIManager uiManager, UserManager userManager, PostManager postManager) {
+        this.uiUtil = uiUtil;
+        this.uiManager = uiManager;
+        this.userManager = userManager;
+        this.postManager = postManager;
         setTitle("Upload Image");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
@@ -35,7 +49,7 @@ public class ImageUploadUI extends JFrame {
 
     private void initializeUI() {
         JPanel headerPanel = createHeaderPanel(); // Reuse the createHeaderPanel method
-        JPanel navigationPanel = UIUtil.createNavigationPanel(); // Reuse the createNavigationPanel method
+        JPanel navigationPanel = uiUtil.createNavigationPanel(uiManager); // Reuse the createNavigationPanel method
 
         // Main content panel
         JPanel contentPanel = new JPanel();
@@ -90,11 +104,11 @@ public class ImageUploadUI extends JFrame {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
 
-            User user = Handler.getDataManager().forUsers().getCurrentUser();
+            User user = this.userManager.getCurrentUser();
 
             Post post = createNewPost(user, selectedFile);
 
-            Handler.getDataManager().forPosts().postPost(
+            this.postManager.postPost(
                     user, post);
 
             ImageIcon imageIcon = post.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE);

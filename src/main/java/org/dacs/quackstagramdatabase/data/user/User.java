@@ -67,66 +67,6 @@ public class User  {
         }
     }
 
-    public List<Post> getPostedPosts() {
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<PostEntity> postEntities = em.findAll(PostEntity.class);
-            List<Post> posts = new ArrayList<>();
-
-            for (PostEntity postEntity : postEntities) {
-                if (postEntity.getUsername().equals(this.username)) {
-                    posts.add(new Post(postEntity.getPostId(), postEntity.getUsername(), postEntity.getCaption(), postEntity.getMediaUrl()));
-                }
-            }
-            return posts;
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-//        return rawPosts.stream()
-//                .map(pictureUuid -> Handler.getDataManager().forPosts().getByUUID(UUID.fromString(pictureUuid)))
-//                .collect(Collectors.toList());
-    }
-
-    public HashMap<User, LocalDateTime> getNotificationsSorted(){
-        List<Map.Entry<User, LocalDateTime>> entryList = new ArrayList<>();
-
-        for(Post picture : getPostedPosts()){
-            entryList.addAll(picture.getLikesData().entrySet());
-        }
-
-        entryList.sort((e1, e2) -> {
-            return e2.getValue().compareTo(e1.getValue()); //reverse order from the latest to earliest
-        });
-
-        HashMap<User, LocalDateTime> map = new HashMap<>();
-        for(Map.Entry<User, LocalDateTime> entry : entryList)
-            map.put(entry.getKey(), entry.getValue());
-
-        return map;
-    }
-
-    public List<User> getFollowing() {
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
-
-            return follows.stream()
-                    .filter(follow -> follow.getFollower().equals(this.username))
-                    .map(follow -> Handler.getDataManager().forUsers().getByUsername(follow.getFollowed()))
-                    .collect(Collectors.toList());
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public int getPostsCount(){
-        return getPostedPosts().size();
-    }
-
     public int getFollowingCount() {
         try {
             EntityManager em = new EntityManager(new DatabaseConfig());
@@ -179,19 +119,5 @@ public class User  {
         }
     }
 
-    public List<User> getFollowers() {
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
 
-            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
-
-            return follows.stream()
-                    .filter(follow -> follow.getFollowed().equals(this.username))
-                    .map(follow -> Handler.getDataManager().forUsers().getByUsername(follow.getFollower()))
-                    .collect(Collectors.toList());
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

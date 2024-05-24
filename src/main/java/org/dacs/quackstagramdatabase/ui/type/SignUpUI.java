@@ -12,6 +12,7 @@ import org.dacs.quackstagramdatabase.database.entities.UserEntity;
 import org.dacs.quackstagramdatabase.ui.UI;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 import org.dacs.quackstagramdatabase.util.Util;
+import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +23,12 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.dacs.quackstagramdatabase.ui.UIManager;
+
+@Component
 public class SignUpUI extends JFrame {
+    private final UserManager userManager;
+    private final UIManager uiManager;
 
     private JTextField usernameText;
     private JTextField passwordText;
@@ -38,7 +44,9 @@ public class SignUpUI extends JFrame {
     private File possiblePicture;
 
 
-    public SignUpUI() {
+    public SignUpUI(UserManager userManager, UIManager uiManager) {
+        this.userManager = userManager;
+        this.uiManager = uiManager;
         setTitle("Quackstagram - Register");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
@@ -108,7 +116,7 @@ public class SignUpUI extends JFrame {
         signInButton = new JButton("Already have an account? Sign In");
 
         signInButton.addActionListener(e -> {
-            Handler.getUiManager().display(UI.SIGN_IN);
+            uiManager.display(UI.SIGN_IN);
         });
 
         registerPanel.add(signInButton, BorderLayout.SOUTH);
@@ -150,8 +158,6 @@ public class SignUpUI extends JFrame {
         String password = passwordText.getText();
         String bio = bioText.getText();
 
-        UserManager userManager = Handler.getDataManager().forUsers();
-
         if (userManager.exists(username)) {
             JOptionPane.showMessageDialog(this, "Username already exists. Please choose a different username.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -166,7 +172,7 @@ public class SignUpUI extends JFrame {
         registeredUser = userManager.registerUser(username, password, bio, pfp_extention);
         handleProfilePictureUpload(true);
 
-        Handler.getUiManager().display(UI.SIGN_IN);
+        this.uiManager.display(UI.SIGN_IN);
     }
 
     // Method to handle profile picture upload

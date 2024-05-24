@@ -17,18 +17,18 @@ public class Handler {
     private DataManager dataManager;
 
     @Getter
-    private static UIManager uiManager;
+    private UIManager uiManager;
 
     @Getter
     private static Util util;
 
     @Autowired
-    public Handler(DataManager dataManager) {
+    public Handler(DataManager dataManager, UIManager uiManager) {
         this.dataManager = dataManager;
+        this.uiManager = uiManager;
     }
 
     public void start() {
-        uiManager = new UIManager();
         util = new Util();
 
         uiManager.startApp();

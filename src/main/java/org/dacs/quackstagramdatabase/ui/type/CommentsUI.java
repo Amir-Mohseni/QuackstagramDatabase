@@ -5,6 +5,7 @@ import org.dacs.quackstagramdatabase.data.DataManager;
 import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.user.User;
 import org.dacs.quackstagramdatabase.database.entities.CommentEntity;
+import org.dacs.quackstagramdatabase.ui.UIManager;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,15 +16,18 @@ import java.awt.*;
 
 @Component
 public class CommentsUI extends JFrame {
-    private DataManager dataManager;
+    private final UIUtil uiUtil;
+    private final DataManager dataManager;
+    private final UIManager uiManager;
 
     Post post;
     JPanel contentPanel; // Declare contentPanel as a class-level variable to access it later
 
     @Autowired
-    public CommentsUI(Post post, DataManager dataManager) {
+    public CommentsUI(UIUtil uiUtil, DataManager dataManager, UIManager uiManager) {
+        this.uiUtil = uiUtil;
         this.dataManager = dataManager;
-        this.post = post;
+        this.uiManager = uiManager;
 
         setTitle("Comments");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
@@ -33,8 +37,15 @@ public class CommentsUI extends JFrame {
         initializeUI();
     }
 
+    public void loadPost(Post post) {
+        this.post = post;
+
+        // Add comments to the panel
+        updateCommentsPanel();
+    }
+
     private void initializeUI() {
-        JPanel navigationPanel = UIUtil.createNavigationPanel();
+        JPanel navigationPanel = uiUtil.createNavigationPanel(uiManager);
 
         // Content Panel for comments
         contentPanel = new JPanel();
@@ -42,9 +53,6 @@ public class CommentsUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
-        // Add comments to the panel
-        updateCommentsPanel();
 
         // Add a text field and a button to add new comments
         JPanel addCommentPanel = getAddCommentPanel();

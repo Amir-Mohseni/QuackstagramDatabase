@@ -4,8 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.post.Post;
+import org.dacs.quackstagramdatabase.data.post.PostManager;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.data.user.UserManager;
+import org.dacs.quackstagramdatabase.ui.UIManager;
 import org.dacs.quackstagramdatabase.ui.UIUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 
@@ -17,8 +21,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
+@org.springframework.stereotype.Component
 public class InstagramProfileUI extends JFrame {
+    private final UserManager userManager;
 
     private static final int PROFILE_IMAGE_SIZE = 80; // Adjusted size for the profile image to match UI
     private static final int GRID_IMAGE_SIZE = UIUtil.WIDTH / 3; // Static size for grid images
@@ -30,16 +35,19 @@ public class InstagramProfileUI extends JFrame {
     @Setter
     private User currentUser; // User object to store the current user's information
 
-    public InstagramProfileUI() {
+    @Autowired
+    public InstagramProfileUI(UIUtil uiUtil, UIManager uiManager, UserManager userManager) {
+        this.userManager = userManager;
+        uiManager.intializeProfileUI(this);
 
         //This is a workaround so the magnificent UI manager works properly
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.schedule(() -> {
             if(currentUser == null){
-                currentUser = Handler.getDataManager().forUsers().getCurrentUser();
+                currentUser = userManager.getCurrentUser();
             }
             System.out.println("Bio for " + currentUser.getUsername() + ": " + currentUser.getBio());
-            System.out.println(currentUser.getPostsCount());
+            System.out.println(userManager.getPostsCount(currentUser));
 
             setTitle("DACS Profile");
             setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
@@ -48,7 +56,7 @@ public class InstagramProfileUI extends JFrame {
             setLayout(new BorderLayout());
             contentPanel = new JPanel();
             headerPanel = createHeaderPanel();       // Initialize header panel
-            navigationPanel = UIUtil.createNavigationPanel(); // Initialize navigation panel
+            navigationPanel = uiUtil.createNavigationPanel(uiManager); // Initialize navigation panel
 
             initializeUI();
 
@@ -73,7 +81,7 @@ public class InstagramProfileUI extends JFrame {
     }
 
     private JPanel createHeaderPanel() {
-        User loggedInUser = Handler.getDataManager().forUsers().getCurrentUser();
+        User loggedInUser = this.userManager.getCurrentUser();
         boolean isCurrentUser = loggedInUser.getUsername().equals(currentUser.getUsername());
 
         // Header Panel
@@ -94,8 +102,8 @@ public class InstagramProfileUI extends JFrame {
         JPanel statsPanel = new JPanel();
         statsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         statsPanel.setBackground(new Color(249, 249, 249));
-        System.out.println("Number of posts for this user" + currentUser.getPostsCount());
-        statsPanel.add(createStatLabel(Integer.toString(currentUser.getPostsCount()), "Posts"));
+        System.out.println("Number of posts for this user" + this.userManager.getPostsCount(currentUser));
+        statsPanel.add(createStatLabel(Integer.toString(this.userManager.getPostsCount(currentUser)), "Posts"));
         statsPanel.add(createStatLabel(Integer.toString(currentUser.getFollowersCount()), "Followers"));
         statsPanel.add(createStatLabel(Integer.toString(currentUser.getFollowingCount()), "Following"));
         statsPanel.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 0)); // Add some vertical padding
@@ -171,7 +179,7 @@ public class InstagramProfileUI extends JFrame {
         contentPanel.removeAll(); // Clear existing content
         contentPanel.setLayout(new GridLayout(0, 3, 5, 5)); // Grid layout for image grid
 
-        for(Post post : currentUser.getPostedPosts()){
+        for(Post post : this.userManager.getPostedPosts(currentUser)){
             JLabel imageLabel = new JLabel(post.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE));
             imageLabel.addMouseListener(new MouseAdapter() {
                 @Override
