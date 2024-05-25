@@ -151,6 +151,48 @@ public class UserManager {
         }
     }
 
+    public int getFollowersCount(User user){
+        try {
+            UserEntity userEntity = entityManager.find(UserEntity.class, Arrays.asList(user.getUsername()));
+            return userEntity.getNumberOfFollowers();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getFollowingCount(User user) {
+        try {
+            UserEntity userEntity = entityManager.find(UserEntity.class, Arrays.asList(user.getUsername()));
+            return userEntity.getNumberOfFollowing();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void follow(User follower, User followee){
+        try {
+            FollowsEntity newFollow = new FollowsEntity(follower.getUsername(), followee.getUsername());
+
+            entityManager.persist(newFollow);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isFollowing(User follower, User followee) {
+        try {
+            FollowsEntity follow = entityManager.find(FollowsEntity.class, Arrays.asList(follower.getUsername(), followee.getUsername()));
+
+            return follow != null;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public User getByUsername(String username) {
         try {
             List<Object> primaryKeys = new ArrayList<>();

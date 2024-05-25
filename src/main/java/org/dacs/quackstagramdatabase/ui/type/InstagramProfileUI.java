@@ -106,8 +106,8 @@ public class InstagramProfileUI extends JFrame {
         statsPanel.setBackground(new Color(249, 249, 249));
         System.out.println("Number of posts for this user" + this.userManager.getPostsCount(currentUser));
         statsPanel.add(createStatLabel(Integer.toString(this.userManager.getPostsCount(currentUser)), "Posts"));
-        statsPanel.add(createStatLabel(Integer.toString(currentUser.getFollowersCount()), "Followers"));
-        statsPanel.add(createStatLabel(Integer.toString(currentUser.getFollowingCount()), "Following"));
+        statsPanel.add(createStatLabel(Integer.toString(userManager.getFollowersCount(currentUser)), "Followers"));
+        statsPanel.add(createStatLabel(Integer.toString(userManager.getFollowingCount(currentUser)), "Following"));
         statsPanel.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 0)); // Add some vertical padding
 
 
@@ -120,11 +120,11 @@ public class InstagramProfileUI extends JFrame {
         } else {
             followButton = new JButton("Follow");
 
-            if(loggedInUser.isFollowing(currentUser)) {
+            if(userManager.isFollowing(loggedInUser, currentUser)) {
                 followButton.setText("Following");
             } else {
                 followButton.addActionListener(e -> {
-                    loggedInUser.follow(currentUser);
+                    userManager.follow(loggedInUser, currentUser);
                     followButton.setText("Following");
 
                     initializeUI();
