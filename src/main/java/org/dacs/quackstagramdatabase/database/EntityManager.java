@@ -8,10 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,7 +81,12 @@ public class EntityManager {
                         // typically there is only one
                         if (field.isAnnotationPresent(Defaulted.class)) {
                             field.setAccessible(true);
-                            field.set(entity, generatedKeys.getObject(1, field.getType()));
+                            if (Timestamp.class.isAssignableFrom(field.getType())) {
+                                Long timestampLong = generatedKeys.getLong(1);
+                                field.set(entity, new Timestamp(timestampLong));
+                            } else {
+                                field.set(entity, generatedKeys.getObject(1, field.getType()));
+                            }
                         }
                     }
                 }

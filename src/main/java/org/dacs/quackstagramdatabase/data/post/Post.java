@@ -61,7 +61,7 @@ public class Post {
 
 
     public ImageIcon getImage(int width, int height){
-        File path = Paths.get("img", "uploaded", postID.toString() + "." + getExtension()).toFile();
+        File path = Paths.get("src/main/resources/img", "uploaded", postID.toString() + "." + getExtension()).toFile();
         ImageIcon imageIcon;
         try {
             BufferedImage originalImage = ImageIO.read(path);
