@@ -100,7 +100,7 @@ public class User  {
 
     public ImageIcon getProfilePicture(int width, int height){
         return new ImageIcon(
-                new ImageIcon(Paths.get("img", "storage", "profile",  username + "." + getExtension()).toString())
+                new ImageIcon(Paths.get("src/main/resources/img", "profile",  username + "." + getExtension()).toString())
                         .getImage()
                         .getScaledInstance(width, height, Image.SCALE_SMOOTH));
     }
@@ -113,7 +113,11 @@ public class User  {
 
         try {
             BufferedImage image = ImageIO.read(file);
-            File outputFile = Paths.get("src/main/resources/img", "storage.profile",  username + "." + getExtension()).toFile();
+            File outputDirectory = Paths.get("src/main/resources/img", "profile").toFile();
+            if (!outputDirectory.exists()) {
+                outputDirectory.mkdirs(); // Create the directory if it does not exist
+            }
+            File outputFile = Paths.get("src/main/resources/img", "profile",  username + "." + getExtension()).toFile();
             ImageIO.write(image, getExtension(), outputFile);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,16 +1,8 @@
 package org.dacs.quackstagramdatabase.data.user;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
-import org.dacs.quackstagramdatabase.data.DataManager;
 import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.post.PostManager;
-import org.dacs.quackstagramdatabase.database.DatabaseConfig;
 import org.dacs.quackstagramdatabase.database.EntityManager;
 import org.dacs.quackstagramdatabase.database.entities.CredentialEntity;
 import org.dacs.quackstagramdatabase.database.entities.FollowsEntity;
@@ -41,7 +33,7 @@ public class UserManager {
 
     public List<User> getFollowers(User user) {
         try {
-            List<FollowsEntity> follows = UserManager.this.entityManager.findAll(FollowsEntity.class);
+            List<FollowsEntity> follows = entityManager.findAll(FollowsEntity.class);
 
             return follows.stream()
                     .filter(follow -> follow.getFollowed().equals(user.getUsername()))
@@ -55,9 +47,7 @@ public class UserManager {
 
     public List<User> getFollowing(User user) {
         try {
-            EntityManager entityManager = this.entityManager;
-
-            List<FollowsEntity> follows = UserManager.this.entityManager.findAll(FollowsEntity.class);
+            List<FollowsEntity> follows = entityManager.findAll(FollowsEntity.class);
 
             return follows.stream()
                     .filter(follow -> follow.getFollower().equals(user.getUsername()))
@@ -71,8 +61,6 @@ public class UserManager {
 
     public User auth(String username, String password) {
         try {
-            EntityManager entityManager = this.entityManager;
-
             List<Object> primaryKeys = new ArrayList<>();
             primaryKeys.add(username);
 

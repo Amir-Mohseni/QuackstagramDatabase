@@ -1,6 +1,4 @@
 package org.dacs.quackstagramdatabase.ui.type;
-
-import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.post.PostManager;
 import org.dacs.quackstagramdatabase.data.user.User;
@@ -168,7 +166,7 @@ public class QuakstagramHomeUI extends JFrame {
         // Header with the Register label
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerPanel.setBackground(new Color(51, 51, 51)); // Set a darker background for the header
-        JLabel lblRegister = new JLabel("\u1F425 Quackstagram \u1F425");
+        JLabel lblRegister = new JLabel("Quackstagram - Home");
         lblRegister.setFont(new Font("Arial", Font.BOLD, 16));
         lblRegister.setForeground(Color.WHITE); // Set the text color to white
         headerPanel.add(lblRegister);

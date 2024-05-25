@@ -3,12 +3,6 @@ package org.dacs.quackstagramdatabase.data.post;
 import lombok.Getter;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
-import org.dacs.quackstagramdatabase.data.Comment;
-import org.dacs.quackstagramdatabase.data.user.User;
-import org.dacs.quackstagramdatabase.database.*;
-import org.dacs.quackstagramdatabase.database.entities.CommentEntity;
-import org.dacs.quackstagramdatabase.database.entities.LikeEntity;
-import org.dacs.quackstagramdatabase.database.entities.PostEntity;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -19,12 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.List;
 
 
 // Represents a picture on Quackstagram
@@ -55,8 +43,14 @@ public class Post {
             return null;
 
         setExtension(Handler.getUtil().getFileExtension(file));
+
+        File outputDirectory = Paths.get("src/main/resources/img", "uploaded").toFile();
+        if (!outputDirectory.exists()) {
+            outputDirectory.mkdirs(); // Create the directory if it does not exist
+        }
+
         try {
-            Files.copy(file.toPath(), Paths.get("img", "uploaded", postID.toString() + "." + getExtension()),
+            Files.copy(file.toPath(), Paths.get("src/main/resources/img", "uploaded", postID.toString() + "." + getExtension()),
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException(e);

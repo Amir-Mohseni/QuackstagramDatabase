@@ -59,7 +59,7 @@ public class SignUpUI extends JFrame {
         // Header with the Register label
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerPanel.setBackground(new Color(51, 51, 51)); // Set a darker background for the header
-        JLabel lblRegister = new JLabel("Quackstagram \u1F425");
+        JLabel lblRegister = new JLabel("Quackstagram");
         lblRegister.setFont(new Font("Arial", Font.BOLD, 16));
         lblRegister.setForeground(Color.WHITE); // Set the text color to white
         headerPanel.add(lblRegister);
@@ -72,7 +72,7 @@ public class SignUpUI extends JFrame {
         photoLabel.setPreferredSize(new Dimension(80, 80));
         photoLabel.setHorizontalAlignment(JLabel.CENTER);
         photoLabel.setVerticalAlignment(JLabel.CENTER);
-        photoLabel.setIcon(new ImageIcon(new ImageIcon("img/logos/DACS.png").getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+        photoLabel.setIcon(new ImageIcon(new ImageIcon("src/main/resources/img/logos/DACS.png").getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
         JPanel photoPanel = new JPanel(); // Use a panel to center the photo label
         photoPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         photoPanel.add(photoLabel);

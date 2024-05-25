@@ -35,7 +35,7 @@ public class SignInUI extends JFrame {
 
     public SignInUI(UserManager userManager) {
         this.userManager = userManager;
-        setTitle("Quackstagram - Register");
+        setTitle("Quackstagram - Login");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -46,7 +46,7 @@ public class SignInUI extends JFrame {
         // Header with the Register label
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerPanel.setBackground(new Color(51, 51, 51)); // Set a darker background for the header
-        JLabel lblRegister = new JLabel("Quackstagram \u1F425");
+        JLabel lblRegister = new JLabel("Quackstagram");
         lblRegister.setFont(new Font("Arial", Font.BOLD, 16));
         lblRegister.setForeground(Color.WHITE); // Set the text color to white
         headerPanel.add(lblRegister);
@@ -114,7 +114,7 @@ public class SignInUI extends JFrame {
         lblPhoto.setPreferredSize(new Dimension(80, 80));
         lblPhoto.setHorizontalAlignment(JLabel.CENTER);
         lblPhoto.setVerticalAlignment(JLabel.CENTER);
-        lblPhoto.setIcon(new ImageIcon(new ImageIcon("src/main/java/org/dacs/quackstagramdatabase/img/logos/DACS.png").getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+        lblPhoto.setIcon(new ImageIcon(new ImageIcon("src/main/resources/img/logos/DACS.png").getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
     }
 
     private JPanel getButtonPanel() {
