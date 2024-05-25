@@ -182,17 +182,21 @@ public class InstagramProfileUI extends JFrame {
 
     private void initializeImageGrid() {
         contentPanel.removeAll(); // Clear existing content
+//        this.contentPanel = new JPanel();
         contentPanel.setLayout(new GridLayout(0, 3, 5, 5)); // Grid layout for image grid
 
         for(Post post : this.userManager.getPostedPosts(currentUser)){
-            JLabel imageLabel = new JLabel(post.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE));
-            imageLabel.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    displayImage(post); // Call method to display the clicked image
-                }
-            });
-            contentPanel.add(imageLabel);
+            ImageIcon imageIcon = post.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE);
+            if (imageIcon != null) {
+                JLabel imageLabel = new JLabel(imageIcon);
+                imageLabel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        displayImage(post); // Call method to display the clicked image
+                    }
+                });
+                contentPanel.add(imageLabel);
+            }
         }
 
         JScrollPane scrollPane = new JScrollPane(contentPanel);

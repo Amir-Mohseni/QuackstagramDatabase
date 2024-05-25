@@ -72,7 +72,8 @@ public class Post {
                             Image.SCALE_DEFAULT);
             imageIcon = new ImageIcon(croppedImage);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+//            throw new RuntimeException(ex);
+            return null;
         }
 
         return imageIcon;
