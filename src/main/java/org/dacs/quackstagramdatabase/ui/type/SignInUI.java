@@ -114,7 +114,7 @@ public class SignInUI extends JFrame {
         lblPhoto.setPreferredSize(new Dimension(80, 80));
         lblPhoto.setHorizontalAlignment(JLabel.CENTER);
         lblPhoto.setVerticalAlignment(JLabel.CENTER);
-        lblPhoto.setIcon(new ImageIcon(new ImageIcon("img/logos/DACS.png").getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+        lblPhoto.setIcon(new ImageIcon(new ImageIcon("src/main/java/org/dacs/quackstagramdatabase/img/logos/DACS.png").getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
     }
 
     private JPanel getButtonPanel() {
@@ -142,7 +142,7 @@ public class SignInUI extends JFrame {
 
         System.out.println(enteredUsername + " <-> " + enteredPassword);
 
-        User user = this.userManager.auth(enteredUsername, enteredPassword);
+        User user = userManager.auth(enteredUsername, enteredPassword);
 
         if (user != null) {
             System.out.println("User authentication succeeded.");

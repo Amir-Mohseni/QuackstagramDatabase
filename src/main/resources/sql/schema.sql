@@ -79,5 +79,4 @@ CREATE INDEX idx_FollowDate ON Follows (FollowDate);
 
 -- Indexes
 CREATE INDEX idx_Username ON Users (Username);
-CREATE INDEX idx_PostID ON Comments (PostID);
 CREATE INDEX idx_CommentID ON Comments (CommentID);

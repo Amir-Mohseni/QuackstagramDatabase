@@ -138,7 +138,6 @@ public class EntityManager {
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    System.out.println("Found entity");
                     T entity = clazz.getDeclaredConstructor().newInstance();
                     for (Field field : clazz.getDeclaredFields()) {
                         // we will only work with columns annotated with @Class

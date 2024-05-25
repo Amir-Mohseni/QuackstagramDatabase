@@ -113,7 +113,7 @@ public class User  {
 
         try {
             BufferedImage image = ImageIO.read(file);
-            File outputFile = Paths.get("img", "storage", "profile",  username + "." + getExtension()).toFile();
+            File outputFile = Paths.get("src/main/resources/img", "storage.profile",  username + "." + getExtension()).toFile();
             ImageIO.write(image, getExtension(), outputFile);
         } catch (IOException e) {
             throw new RuntimeException(e);

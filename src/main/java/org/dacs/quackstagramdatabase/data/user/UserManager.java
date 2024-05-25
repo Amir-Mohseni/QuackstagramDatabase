@@ -77,14 +77,14 @@ public class UserManager {
             primaryKeys.add(username);
 
             CredentialEntity credentialEntity = entityManager.find(CredentialEntity.class, primaryKeys);
+            UserEntity userEntity = entityManager.find(UserEntity.class, primaryKeys);
 
-            UserEntity authenticatedUserEntity = entityManager.find(UserEntity.class, primaryKeys);
-            if (authenticatedUserEntity == null || !Handler.getUtil().matches(password, credentialEntity.getPasswordHash())) {
+            if (userEntity == null || !Handler.getUtil().matches(password, credentialEntity.getPasswordHash())) {
                 setCurrentUser(null);
                 return null;
             }
 
-            User authenticatedUser = new User(authenticatedUserEntity.getUsername(), credentialEntity.getPasswordHash(), authenticatedUserEntity.getBio(), authenticatedUserEntity.getProfilePicture());
+            User authenticatedUser = new User(userEntity.getUsername(), credentialEntity.getPasswordHash(), userEntity.getBio(), userEntity.getProfilePicture());
 
             setCurrentUser(authenticatedUser);
             return authenticatedUser;
@@ -151,12 +151,13 @@ public class UserManager {
     public User registerUser(String username, String password, String bio, String pfp_extention) {
         try {
             UserEntity userEntity = new UserEntity(username, pfp_extention, bio);
-            CredentialEntity credentialEntity = new CredentialEntity(username, password);
+            String hashedPassword = Handler.getUtil().hash(password);
+            CredentialEntity credentialEntity = new CredentialEntity(username, hashedPassword);
 
             entityManager.persist(userEntity);
             entityManager.persist(credentialEntity);
 
-            return new User(username, password, bio, pfp_extention);
+            return new User(username, hashedPassword, bio, pfp_extention);
         } catch (SQLException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
