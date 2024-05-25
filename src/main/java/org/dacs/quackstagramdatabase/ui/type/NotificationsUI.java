@@ -52,22 +52,24 @@ public class NotificationsUI extends JFrame {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         User currentUser = this.userManager.getCurrentUser();
-        for(Map.Entry<User, LocalDateTime> entry : this.userManager.getNotificationsSorted(currentUser).entrySet()){
+        if (currentUser != null) {
+            for(Map.Entry<User, LocalDateTime> entry : this.userManager.getNotificationsSorted(currentUser).entrySet()){
 
-            String notificationMessage = entry.getKey().getUsername() + " liked your picture - " + getElapsedTime(entry.getValue()) + " ago";
+                String notificationMessage = entry.getKey().getUsername() + " liked your picture - " + getElapsedTime(entry.getValue()) + " ago";
 
-            // Add the notification to the panel
-            JPanel notificationPanel = new JPanel(new BorderLayout());
-            notificationPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                // Add the notification to the panel
+                JPanel notificationPanel = new JPanel(new BorderLayout());
+                notificationPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-            JLabel notificationLabel = new JLabel(notificationMessage);
-            notificationPanel.add(notificationLabel, BorderLayout.CENTER);
+                JLabel notificationLabel = new JLabel(notificationMessage);
+                notificationPanel.add(notificationLabel, BorderLayout.CENTER);
 
-            // Add profile icon (if available) and timestamp
-            // ... (Additional UI components if needed)
+                // Add profile icon (if available) and timestamp
+                // ... (Additional UI components if needed)
 
-            contentPanel.add(notificationPanel);
+                contentPanel.add(notificationPanel);
 
+            }
         }
 
         // Add panels to frame
