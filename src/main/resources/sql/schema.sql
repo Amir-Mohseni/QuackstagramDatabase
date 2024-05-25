@@ -8,6 +8,10 @@ CREATE TABLE IF NOT EXISTS Users (
                                      PostsCount     INT           DEFAULT 0 NOT NULL
 );
 
+CREATE INDEX idx_NumFollowers ON Users (NumFollowers);
+CREATE INDEX idx_NumFollowing ON Users (NumFollowing);
+CREATE INDEX idx_PostsCount ON Users (PostsCount);
+
 -- Posts table
 CREATE TABLE IF NOT EXISTS Posts (
                                      PostID      INT              NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -20,6 +24,9 @@ CREATE TABLE IF NOT EXISTS Posts (
                                      CONSTRAINT Posts_ibfk_1 FOREIGN KEY (Username) REFERENCES Users (Username)
 );
 
+CREATE INDEX idx_Username ON Posts (Username);
+CREATE INDEX idx_PostDate ON Posts (PostDate);
+
 -- Comments table
 CREATE TABLE IF NOT EXISTS Comments (
                                         CommentID   INT              NOT NULL AUTO_INCREMENT,
@@ -31,6 +38,10 @@ CREATE TABLE IF NOT EXISTS Comments (
                                         CONSTRAINT Comments_ibfk_1 FOREIGN KEY (PostID) REFERENCES Posts (PostID),
                                         CONSTRAINT Comments_ibfk_2 FOREIGN KEY (Username) REFERENCES Users (Username)
 );
+
+CREATE INDEX idx_PostID ON Comments (PostID);
+CREATE INDEX idx_Username ON Comments (Username);
+CREATE INDEX idx_CommentDate ON Comments (CommentDate);
 
 -- Credentials table
 CREATE TABLE IF NOT EXISTS Credentials (
@@ -49,6 +60,9 @@ CREATE TABLE IF NOT EXISTS Likes (
                                      CONSTRAINT Likes_ibfk_2 FOREIGN KEY (Username) REFERENCES Users (Username)
 );
 
+CREATE INDEX idx_Username ON Likes (Username);
+CREATE INDEX idx_LikeDate ON Likes (LikeDate);
+
 -- Follows table
 CREATE TABLE IF NOT EXISTS Follows (
                                        FollowerUsername VARCHAR(255) NOT NULL,
@@ -59,6 +73,9 @@ CREATE TABLE IF NOT EXISTS Follows (
                                        CONSTRAINT Follows_ibfk_2 FOREIGN KEY (FollowedUsername) REFERENCES Users (Username),
                                        CONSTRAINT Follows_ibfk_3 CHECK (FollowerUsername != FollowedUsername)
 );
+
+CREATE INDEX idx_FollowedUsername ON Follows (FollowedUsername);
+CREATE INDEX idx_FollowDate ON Follows (FollowDate);
 
 -- Indexes
 CREATE INDEX idx_Username ON Users (Username);
