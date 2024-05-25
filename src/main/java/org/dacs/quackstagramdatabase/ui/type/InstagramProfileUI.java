@@ -52,9 +52,6 @@ public class InstagramProfileUI extends JFrame {
         //This is a workaround so the magnificent UI manager works properly
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.schedule(() -> {
-//            if(currentUser == null){
-//                currentUser = userManager.getCurrentUser();
-//            }
             System.out.println("Bio for " + currentUser.getUsername() + ": " + currentUser.getBio());
             System.out.println(userManager.getPostsCount(currentUser));
 
@@ -69,7 +66,7 @@ public class InstagramProfileUI extends JFrame {
 
             initializeUI();
 
-        }, 1000, TimeUnit.MILLISECONDS);
+        }, 100, TimeUnit.MILLISECONDS);
     }
 
     private void initializeUI() {

@@ -27,15 +27,15 @@ public class UIUtil {
         navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.X_AXIS));
         navigationPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        navigationPanel.add(createIconButton(uiManager,"img/icons/home.png", "home"));
+        navigationPanel.add(createIconButton(uiManager,"src/main/resources/img/icons/home.png", "home"));
         navigationPanel.add(Box.createHorizontalGlue());
-        navigationPanel.add(createIconButton(uiManager, "img/icons/search.png", "explore"));
+        navigationPanel.add(createIconButton(uiManager, "src/main/resources/img/icons/search.png", "explore"));
         navigationPanel.add(Box.createHorizontalGlue());
-        navigationPanel.add(createIconButton(uiManager, "img/icons/add.png", "add"));
+        navigationPanel.add(createIconButton(uiManager, "src/main/resources/img/icons/add.png", "add"));
         navigationPanel.add(Box.createHorizontalGlue());
-        navigationPanel.add(createIconButton(uiManager, "img/icons/heart.png", "notification"));
+        navigationPanel.add(createIconButton(uiManager, "src/main/resources/img/icons/heart.png", "notification"));
         navigationPanel.add(Box.createHorizontalGlue());
-        navigationPanel.add(createIconButton(uiManager, "img/icons/profile.png", "profile"));
+        navigationPanel.add(createIconButton(uiManager, "src/main/resources/img/icons/profile.png", "profile"));
 
         return navigationPanel;
     }
