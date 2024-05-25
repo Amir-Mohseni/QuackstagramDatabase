@@ -163,7 +163,7 @@ public class EntityManager {
         return null;
     }
 
-    public <T> void delete(Class<T> clazz, Object id) throws SQLException, IllegalAccessException {
+    public <T> void delete(Class<T> clazz, Object id) throws SQLException {
         // check if the class is supported;
         if (!clazz.isAnnotationPresent(Entity.class)) {
             throw new RuntimeException("Class " + clazz.getName() + " is not an @Entity");

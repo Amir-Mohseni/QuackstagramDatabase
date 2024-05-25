@@ -110,8 +110,7 @@ public class ImageUploadUI extends JFrame {
 
             Post post = createNewPost(user, selectedFile);
 
-            this.postManager.postPost(
-                    user, post);
+//            this.postManager.postPost(user, post);
 
             ImageIcon imageIcon = post.getImage(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE);
 
