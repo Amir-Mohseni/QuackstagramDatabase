@@ -3,6 +3,7 @@ import lombok.Data;
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.post.Post;
 import org.dacs.quackstagramdatabase.data.post.PostManager;
+import org.dacs.quackstagramdatabase.database.DatabaseConfig;
 import org.dacs.quackstagramdatabase.database.EntityManager;
 import org.dacs.quackstagramdatabase.database.entities.CredentialEntity;
 import org.dacs.quackstagramdatabase.database.entities.FollowsEntity;
@@ -166,4 +167,51 @@ public class UserManager {
         }
     }
 
+    public void follow(User user1, User user2){
+        try {
+            FollowsEntity newFollow = new FollowsEntity(user1.getUsername(), user2.getUsername());
+
+            entityManager.persist(newFollow);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isFollowing(User user1, User user2) {
+        try {
+            FollowsEntity follow = entityManager.find(FollowsEntity.class, Arrays.asList(user1.getUsername(), user2.getUsername()));
+
+            return follow != null;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getFollowingCount(User user) {
+        try {
+            List<FollowsEntity> follows = entityManager.findAll(FollowsEntity.class);
+
+            return (int) follows.stream()
+                    .filter(follow -> follow.getFollower().equals(user.getUsername()))
+                    .count();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getFollowersCount(User user){
+        try {
+            List<FollowsEntity> follows = entityManager.findAll(FollowsEntity.class);
+
+            return (int) follows.stream()
+                    .filter(follow -> follow.getFollowed().equals(user.getUsername()))
+                    .count();
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

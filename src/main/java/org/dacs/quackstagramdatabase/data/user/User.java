@@ -42,62 +42,6 @@ public class User  {
         this.extension = extension;
     }
 
-    public void follow(User user){
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            FollowsEntity newFollow = new FollowsEntity(this.username, user.getUsername());
-
-            em.persist(newFollow);
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean isFollowing(User user) {
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            FollowsEntity follow = em.find(FollowsEntity.class, Arrays.asList(this.username, user.getUsername()));
-
-            return follow != null;
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public int getFollowingCount() {
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
-
-            return (int) follows.stream()
-                    .filter(follow -> follow.getFollower().equals(this.username))
-                    .count();
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public int getFollowersCount(){
-        try {
-            EntityManager em = new EntityManager(new DatabaseConfig());
-
-            List<FollowsEntity> follows = em.findAll(FollowsEntity.class);
-
-            return (int) follows.stream()
-                    .filter(follow -> follow.getFollowed().equals(this.username))
-                    .count();
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public ImageIcon getProfilePicture(int width, int height){
         return new ImageIcon(
                 new ImageIcon(Paths.get("src/main/resources/img", "profile",  username + "." + getExtension()).toString())

@@ -152,8 +152,9 @@ public class SignInUI extends JFrame {
 
             SwingUtilities.invokeLater(() -> {
                 profileUI.setCurrentUser(user);
-                uiManager.setCurrentFrame(profileUI);
-                profileUI.setVisible(true);
+                uiManager.display("profile");
+//                uiManager.setCurrentFrame(profileUI);
+//                profileUI.setVisible(true);
             });
         } else {
             JOptionPane.showMessageDialog(this, "Invalid username or password. Please try again.");

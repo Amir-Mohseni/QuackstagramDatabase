@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 public class InstagramProfileUI extends JFrame {
     private final UserManager userManager;
     private final PostManager postManager;
+    private final UIUtil uiUtil;
+    private final UIManager uiManager;
 
     private static final int PROFILE_IMAGE_SIZE = 80; // Adjusted size for the profile image to match UI
     private static final int GRID_IMAGE_SIZE = UIUtil.WIDTH / 3; // Static size for grid images
@@ -37,17 +39,22 @@ public class InstagramProfileUI extends JFrame {
     private User currentUser; // User object to store the current user's information
 
     @Autowired
-    public InstagramProfileUI(UIUtil uiUtil, UIManager uiManager, UserManager userManager, PostManager postManager) {
+    public InstagramProfileUI(UIManager uiManager, UserManager userManager, PostManager postManager, UIUtil uiUtil1) {
         this.userManager = userManager;
         this.postManager = postManager;
+        this.uiUtil = uiUtil1;
+        this.uiManager = uiManager;
         uiManager.intializeProfileUI(this);
+    }
 
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
         //This is a workaround so the magnificent UI manager works properly
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.schedule(() -> {
-            if(currentUser == null){
-                currentUser = userManager.getCurrentUser();
-            }
+//            if(currentUser == null){
+//                currentUser = userManager.getCurrentUser();
+//            }
             System.out.println("Bio for " + currentUser.getUsername() + ": " + currentUser.getBio());
             System.out.println(userManager.getPostsCount(currentUser));
 
@@ -62,11 +69,8 @@ public class InstagramProfileUI extends JFrame {
 
             initializeUI();
 
-        }, 100, TimeUnit.MILLISECONDS);
-
-
+        }, 1000, TimeUnit.MILLISECONDS);
     }
-
 
     private void initializeUI() {
         getContentPane().removeAll(); // Clear existing components
@@ -106,8 +110,10 @@ public class InstagramProfileUI extends JFrame {
         statsPanel.setBackground(new Color(249, 249, 249));
         System.out.println("Number of posts for this user" + this.userManager.getPostsCount(currentUser));
         statsPanel.add(createStatLabel(Integer.toString(this.userManager.getPostsCount(currentUser)), "Posts"));
-        statsPanel.add(createStatLabel(Integer.toString(currentUser.getFollowersCount()), "Followers"));
-        statsPanel.add(createStatLabel(Integer.toString(currentUser.getFollowingCount()), "Following"));
+        System.out.println("Followers");
+        statsPanel.add(createStatLabel(Integer.toString(userManager.getFollowersCount(currentUser)), "Followers"));
+        System.out.println("Following");
+        statsPanel.add(createStatLabel(Integer.toString(userManager.getFollowingCount(currentUser)), "Following"));
         statsPanel.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 0)); // Add some vertical padding
 
 
@@ -120,11 +126,11 @@ public class InstagramProfileUI extends JFrame {
         } else {
             followButton = new JButton("Follow");
 
-            if(loggedInUser.isFollowing(currentUser)) {
+            if(userManager.isFollowing(loggedInUser,currentUser)) {
                 followButton.setText("Following");
             } else {
                 followButton.addActionListener(e -> {
-                    loggedInUser.follow(currentUser);
+                    userManager.follow(loggedInUser, currentUser);
                     followButton.setText("Following");
 
                     initializeUI();
