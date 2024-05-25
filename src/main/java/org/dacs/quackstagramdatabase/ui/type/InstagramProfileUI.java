@@ -51,7 +51,7 @@ public class InstagramProfileUI extends JFrame {
             System.out.println("Bio for " + currentUser.getUsername() + ": " + currentUser.getBio());
             System.out.println(userManager.getPostsCount(currentUser));
 
-            setTitle("DACS Profile");
+            setTitle("User Profile");
             setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
             setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
             setDefaultCloseOperation(EXIT_ON_CLOSE);
