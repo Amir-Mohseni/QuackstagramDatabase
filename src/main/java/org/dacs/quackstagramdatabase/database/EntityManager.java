@@ -230,7 +230,7 @@ public class EntityManager {
         }
 
         // prepare the SQL truncate statement
-        String sql = "TRUNCATE TABLE " + tableName + "; ALTER TABLE " + tableName + " ALTER COLUMN " + idColumn + " RESTART WITH 1";
+        String sql = "TRUNCATE TABLE " + tableName + ";";
 
         try (PreparedStatement preparedStatement = this.connection.prepareStatement(sql)) {
             int result = preparedStatement.executeUpdate();
@@ -277,6 +277,28 @@ public class EntityManager {
             }
         }
 
+    }
+
+    public List<Object> dynamicQuery(String queryString, List<Object> parameters) throws SQLException {
+        List<Object> results = new LinkedList<>();
+        // count the number of placeholder
+        int placeholderCount = queryString.split("\\?").length-1;
+        if (placeholderCount != parameters.size()) {
+            throw new RuntimeException("placeholder count " + placeholderCount + " does not match parameter count " + parameters.size());
+        }
+
+        try (PreparedStatement preparedStatement = this.connection.prepareStatement(queryString)) {
+            for (int i = 0; i < parameters.size(); i++) {
+                preparedStatement.setObject(i + 1, parameters.get(i));
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    results.add(resultSet.getObject(1));
+                }
+            }
+        }
+        return results;
     }
 
 }

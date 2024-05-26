@@ -6,7 +6,7 @@ import org.dacs.quackstagramdatabase.database.annotations.Id;
 import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 
 @Entity(tableName = "TEST")
-public class DatabaseTest {
+public class DatabaseTestEntity {
     @Id
     @Defaulted
     @Column(name = "ID")
@@ -18,15 +18,15 @@ public class DatabaseTest {
     @Column(name = "DATA2")
     private Integer data2;
 
-    public DatabaseTest() {
+    public DatabaseTestEntity() {
     }
 
-    public DatabaseTest(String data1, Integer data2) {
+    public DatabaseTestEntity(String data1, Integer data2) {
         this.data1 = data1;
         this.data2 = data2;
     }
 
-    public DatabaseTest(Integer id, String data1, Integer data2) {
+    public DatabaseTestEntity(Integer id, String data1, Integer data2) {
         this.id = id;
         this.data1 = data1;
         this.data2 = data2;
@@ -58,8 +58,8 @@ public class DatabaseTest {
 
     public boolean equals(final Object o) {
         if (o == this) return true;
-        if (!(o instanceof DatabaseTest)) return false;
-        final DatabaseTest other = (DatabaseTest) o;
+        if (!(o instanceof DatabaseTestEntity)) return false;
+        final DatabaseTestEntity other = (DatabaseTestEntity) o;
         if (!other.canEqual((Object) this)) return false;
         final Object this$id = this.getId();
         final Object other$id = other.getId();
@@ -74,7 +74,7 @@ public class DatabaseTest {
     }
 
     protected boolean canEqual(final Object other) {
-        return other instanceof DatabaseTest;
+        return other instanceof DatabaseTestEntity;
     }
 
     public int hashCode() {

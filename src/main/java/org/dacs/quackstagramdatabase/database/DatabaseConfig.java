@@ -1,6 +1,8 @@
 package org.dacs.quackstagramdatabase.database;
 
 import jakarta.annotation.PreDestroy;
+import lombok.Data;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +12,8 @@ import java.sql.SQLException;
 
 @Component
 public class DatabaseConfig {
-    private Connection connection;
+    @Setter
+    private Connection connection = null;
 
     @Value("${spring.datasource.url}")
     private String URL;
@@ -22,7 +25,10 @@ public class DatabaseConfig {
     private String PASSWORD;
 
     public Connection getConnection() throws SQLException {
-        this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        if (this.connection == null) {
+            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            return this.connection;
+        }
         return this.connection;
     }
 
