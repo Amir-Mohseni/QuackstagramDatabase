@@ -30,9 +30,12 @@ BEGIN
     END IF;
 END$$
 
+DELIMITER $$
+
 -- Create a function to get the number of posts a user has liked
 CREATE FUNCTION GetNumLikedPosts(userUsername VARCHAR(255))
     RETURNS INT
+    READS SQL DATA
 BEGIN
     DECLARE numLikedPosts INT DEFAULT 0;
 
@@ -44,6 +47,8 @@ BEGIN
     RETURN numLikedPosts;
 END$$
 
+DELIMITER $$
+
 -- Trigger after inserting a follow to update follow counts and call the procedure
 CREATE TRIGGER after_follow_insert
     AFTER INSERT ON Follows
@@ -53,6 +58,8 @@ BEGIN
     CALL UpdateFollowCounts(NEW.FollowerUsername, NEW.FollowedUsername, 'INCREMENT');
 END$$
 
+DELIMITER $$
+
 -- Trigger after deleting a follow to update follow counts and call the procedure
 CREATE TRIGGER after_follow_delete
     AFTER DELETE ON Follows
@@ -60,6 +67,51 @@ CREATE TRIGGER after_follow_delete
 BEGIN
     -- Call the procedure to update follow counts
     CALL UpdateFollowCounts(OLD.FollowerUsername, OLD.FollowedUsername, 'DECREMENT');
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+-- Create a procedure to update post count
+CREATE PROCEDURE UpdatePostCount(
+    IN userUsername VARCHAR(255),
+    IN operation VARCHAR(10) -- 'INCREMENT' or 'DECREMENT'
+)
+BEGIN
+    IF operation = 'INCREMENT' THEN
+        -- Increment the number of posts for the user
+        UPDATE Users
+        SET PostsCount = PostsCount + 1
+        WHERE Username = userUsername;
+    ELSEIF operation = 'DECREMENT' THEN
+        -- Decrement the number of posts for the user
+        UPDATE Users
+        SET PostsCount = PostsCount - 1
+        WHERE Username = userUsername;
+    END IF;
+END$$
+
+DELIMITER $$
+
+-- Trigger after inserting a post to update post count and call the procedure
+CREATE TRIGGER after_post_insert
+    AFTER INSERT ON Posts
+    FOR EACH ROW
+BEGIN
+    -- Call the procedure to update post count
+    CALL UpdatePostCount(NEW.Username, 'INCREMENT');
+END$$
+
+DELIMITER $$
+
+-- Trigger after deleting a post to update post count and call the procedure
+CREATE TRIGGER after_post_delete
+    AFTER DELETE ON Posts
+    FOR EACH ROW
+BEGIN
+    -- Call the procedure to update post count
+    CALL UpdatePostCount(OLD.Username, 'DECREMENT');
 END$$
 
 DELIMITER ;
