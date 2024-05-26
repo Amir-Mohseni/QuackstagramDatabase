@@ -38,7 +38,9 @@ public class QuakstagramHomeUI extends JFrame {
         this.postManager = postManager;
         this.uiManager = uiManager;
         this.commentsUI = commentsUI;
+    }
 
+    public void initializeUI() {
         setTitle("Quakstagram Home");
         setSize(UIUtil.WIDTH, UIUtil.HEIGHT);
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
@@ -50,42 +52,10 @@ public class QuakstagramHomeUI extends JFrame {
         homePanel = new JPanel(new BorderLayout());
         imageViewPanel = new JPanel(new BorderLayout());
 
-//        initializeUI();
-
-        cardPanel.add(homePanel, "Home");
-        cardPanel.add(imageViewPanel, "ImageView");
-
-        add(cardPanel, BorderLayout.CENTER);
-        cardLayout.show(cardPanel, "Home"); // Start with the home view
-
-        // Header Panel (reuse from InstagramProfileUI or customize for home page)
-        // Header with the Register label
-        JPanel headerPanel = createHeaderPanel();
-        add(headerPanel, BorderLayout.NORTH);
-
-
-        add(uiUtil.createNavigationPanel(uiManager), BorderLayout.SOUTH);
-    }
-
-    public void initializeUI() {
-
         // Content Scroll Panel
         JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS)); // Vertical box layout
-        JScrollPane scrollPane = new JScrollPane(contentPanel);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER); // Never allow horizontal scrolling
-        populateContentPanel(contentPanel);
-
-        add(scrollPane, BorderLayout.CENTER);
-
-        // Set up the home panel
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        homePanel.add(scrollPane, BorderLayout.CENTER);
 
 
-    }
-
-    private void populateContentPanel(JPanel panel) {
         User currentUser = this.userManager.getCurrentUser();
 
         for(User user : this.userManager.getFollowing(currentUser))
@@ -108,6 +78,7 @@ public class QuakstagramHomeUI extends JFrame {
                 ImageIcon icon = post.getImage(IMAGE_WIDTH, IMAGE_HEIGHT);
                 if(icon == null){
                     // Handle exception: Image file not found or reading error
+                    System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA");
                     imageLabel.setText("Image not found");
                 } else imageLabel.setIcon(icon);
 
@@ -126,7 +97,7 @@ public class QuakstagramHomeUI extends JFrame {
                 itemPanel.add(likesLabel);
                 itemPanel.add(likeButton);
 
-                panel.add(itemPanel);
+                contentPanel.add(itemPanel);
 
                 // Make the image clickable
                 imageLabel.addMouseListener(new MouseAdapter() {
@@ -141,9 +112,45 @@ public class QuakstagramHomeUI extends JFrame {
                 JPanel spacingPanel = new JPanel();
                 spacingPanel.setPreferredSize(new Dimension(WIDTH - 10, 5)); // Set the height for spacing
                 spacingPanel.setBackground(new Color(230, 230, 230)); // Grey color for spacing
-                panel.add(spacingPanel);
+                contentPanel.add(spacingPanel);
 
             }
+
+
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS)); // Vertical box layout
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER); // Never allow horizontal scrolling
+
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Set up the home panel
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        homePanel.add(scrollPane, BorderLayout.CENTER);
+
+        contentPanel.revalidate();
+        contentPanel.repaint();
+        scrollPane.revalidate();
+        scrollPane.repaint();
+        cardPanel.revalidate();
+        cardPanel.repaint();
+
+        cardPanel.add(homePanel, "Home");
+        cardPanel.add(imageViewPanel, "ImageView");
+
+        add(cardPanel, BorderLayout.CENTER);
+        cardLayout.show(cardPanel, "Home"); // Start with the home view
+
+        // Header Panel (reuse from InstagramProfileUI or customize for home page)
+        // Header with the Register label
+        JPanel headerPanel = createHeaderPanel();
+        add(headerPanel, BorderLayout.NORTH);
+
+
+        add(uiUtil.createNavigationPanel(uiManager), BorderLayout.SOUTH);
+    }
+
+    private void populateContentPanel(JPanel panel) {
+
     }
 
     private JButton getLikeButton(Post post, JLabel likesLabel) {
