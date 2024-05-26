@@ -193,7 +193,6 @@ public class ExploreUI extends JFrame {
         });
 
         usernameButton.addActionListener(e -> {
-
             profileUI.setTemporaryUser(postManager.getPostedBy(post));
             profileUI.setVisible(true);
             this.uiManager.setCurrentFrame(profileUI);

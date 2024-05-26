@@ -128,7 +128,7 @@ public class SearchUI extends JFrame {
                     public void mouseClicked(MouseEvent e) {
                         super.mouseClicked(e);
                         //Open the profile of the user when the user panel is clicked
-                        profileUI.setCurrentUser(user);
+                        profileUI.setTemporaryUser(user);
                         profileUI.setVisible(true);
                         uiManager.setCurrentFrame(profileUI);
                         dispose(); // Close the current frame
