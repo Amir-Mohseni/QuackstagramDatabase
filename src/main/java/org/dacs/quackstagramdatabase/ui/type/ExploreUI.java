@@ -143,10 +143,11 @@ public class ExploreUI extends JFrame {
 
         // Top panel for username and time since posting
         JPanel topPanel = new JPanel(new BorderLayout());
-        JButton usernameLabel = new JButton(postManager.getPostedBy(post).getUsername());
+        JButton usernameButton = new JButton(postManager.getPostedBy(post).getUsername());
         JLabel timeLabel = new JLabel(timeSincePosting);
+
         timeLabel.setHorizontalAlignment(JLabel.RIGHT);
-        topPanel.add(usernameLabel, BorderLayout.WEST);
+        topPanel.add(usernameButton, BorderLayout.WEST);
         topPanel.add(timeLabel, BorderLayout.EAST);
 
 
@@ -180,6 +181,7 @@ public class ExploreUI extends JFrame {
         backButton.setPreferredSize(new Dimension(WIDTH - 20, backButton.getPreferredSize().height));
 
         backButtonPanel.add(backButton);
+        topPanel.add(backButton);
 
         backButton.addActionListener(e -> {
             getContentPane().removeAll();
@@ -190,8 +192,9 @@ public class ExploreUI extends JFrame {
             repaint();
         });
 
-        usernameLabel.addActionListener(e -> {
-            profileUI.setCurrentUser(postManager.getPostedBy(post));
+        usernameButton.addActionListener(e -> {
+
+            profileUI.setTemporaryUser(postManager.getPostedBy(post));
             profileUI.setVisible(true);
             this.uiManager.setCurrentFrame(profileUI);
             dispose(); // Close the current frame
@@ -205,7 +208,7 @@ public class ExploreUI extends JFrame {
         containerPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         // Add the container panel and back button panel to the frame
-        add(backButtonPanel, BorderLayout.NORTH);
+//        add(backButtonPanel, BorderLayout.NORTH);
         add(containerPanel, BorderLayout.CENTER);
 
         revalidate();

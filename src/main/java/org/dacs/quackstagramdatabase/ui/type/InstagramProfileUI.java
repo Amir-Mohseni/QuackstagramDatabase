@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.swing.*;
 
 
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.*;
@@ -35,8 +37,10 @@ public class InstagramProfileUI extends JFrame {
     private JPanel navigationPanel; // Panel for the navigation
 
     @Getter
-    @Setter
     private User currentUser; // User object to store the current user's information
+
+    private int tempInt;
+    private User temporaryUser;
 
     @Autowired
     public InstagramProfileUI(UIManager uiManager, UserManager userManager, PostManager postManager, UIUtil uiUtil1) {
@@ -45,6 +49,21 @@ public class InstagramProfileUI extends JFrame {
         this.uiUtil = uiUtil1;
         this.uiManager = uiManager;
         uiManager.intializeProfileUI(this);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                super.componentShown(e);
+
+                if (tempInt >= 1) {
+                    tempInt --;
+                } else {
+                    if (temporaryUser != null) {
+                        setCurrentUser(temporaryUser);
+                    }
+                }
+            }
+        });
     }
 
     public void setCurrentUser(User currentUser) {
@@ -255,4 +274,9 @@ public class InstagramProfileUI extends JFrame {
         return label;
     }
 
+    public void setTemporaryUser(User postedBy) {
+        this.temporaryUser = currentUser;
+        setCurrentUser(postedBy);
+        this.tempInt = 1;
+    }
 }
