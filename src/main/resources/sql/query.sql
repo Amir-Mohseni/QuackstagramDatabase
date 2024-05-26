@@ -4,9 +4,9 @@ FROM Users
 WHERE NumFollowers > ?;
 
 -- Query 2: Number of posts for a User
-SELECT PostsCount
-FROM Users
-WHERE Username = ?;
+SELECT u.Username, u.PostsCount
+FROM Users u
+WHERE u.Username = ?;
 
 -- Query 3: Find all comments made on a particular user’s post.
 SELECT *
@@ -30,15 +30,15 @@ FROM Users
 WHERE PostsCount = 0;
 
 -- Query 7: List users who follow each other.
-SELECT 
-    f1.FollowerUsername AS User1, 
+SELECT
+    f1.FollowerUsername AS User1,
     f1.FollowedUsername AS User2
 FROM
     Follows f1
-    JOIN Follows f2
-ON 
-    f1.FollowerUsername = f2.FollowedUsername
-    AND f1.FollowedUsername = f2.FollowerUsername;
+        JOIN Follows f2
+             ON
+                 f1.FollowerUsername = f2.FollowedUsername
+                     AND f1.FollowedUsername = f2.FollowerUsername;
 
 -- Query 8: Show the user with the highest number of posts.
 SELECT *
@@ -59,24 +59,26 @@ GROUP BY PostID
 HAVING COUNT(DISTINCT Username) = (SELECT COUNT(*) FROM Users);
 
 -- Query 11: Display the most active user (based on posts, comments, and likes).
-SELECT Username
+SELECT Username, PostsCount
 FROM Users
-ORDER BY 
-    (SELECT COUNT(*) FROM Likes WHERE Likes.Username = Users.Username) + 
-    (SELECT COUNT(*) FROM Comments WHERE Comments.Username = Users.Username) + 
+ORDER BY
+    (SELECT COUNT(*) FROM Likes WHERE Likes.Username = Users.Username) +
+    (SELECT COUNT(*) FROM Comments WHERE Comments.Username = Users.Username) +
     PostsCount DESC
 LIMIT 1;
 
 -- Query 12: Find the average number of likes per post for each user.
-SELECT 
-    u.Username, 
+SELECT
+    u.Username,
     COALESCE(AVG(p.NumLikes), 0) AS AverageLikesPerPost
-FROM 
+FROM
     Users u
-LEFT JOIN 
+        LEFT JOIN
     Posts p ON u.Username = p.Username
-GROUP BY 
-    u.Username;
+GROUP BY
+    u.Username
+ORDER BY AverageLikesPerPost DESC;
+
 
 -- Query 13: Show posts that have more comments than likes.
 SELECT *
@@ -90,11 +92,11 @@ WHERE NOT EXISTS (
     SELECT P.PostID
     FROM Posts P
     WHERE P.Username = ?
-    AND NOT EXISTS (
+      AND NOT EXISTS (
         SELECT 1
         FROM Likes L
         WHERE L.Username = U.Username
-        AND L.PostID = P.PostID
+          AND L.PostID = P.PostID
     )
 );
 
@@ -105,21 +107,24 @@ SELECT
     P.NumLikes
 FROM
     Posts P
-JOIN (
-    SELECT
-        Username,
-        MAX(NumLikes) AS MaxLikes
-    FROM
-        Posts
-    GROUP BY
-        Username
-) AS MaxLikesPerUser ON P.Username = MaxLikesPerUser.Username AND P.NumLikes = MaxLikesPerUser.MaxLikes;
+        JOIN (
+        SELECT
+            Username,
+            MAX(NumLikes) AS MaxLikes
+        FROM
+            Posts
+        GROUP BY
+            Username
+    ) AS MaxLikesPerUser ON P.Username = MaxLikesPerUser.Username AND P.NumLikes = MaxLikesPerUser.MaxLikes
+WHERE NumLikes > 0;
 
 -- Query 16: Find the user(s) with the highest ratio of followers to following.
-SELECT 
-    Username, 
-    MAX(COALESCE(NumFollowers / NULLIF(NumFollowing, 0), 0)) AS MaxRatio
-FROM Users;
+SELECT Username,
+       COALESCE(NumFollowers / NULLIF(NumFollowing, 0), 0) AS Ratio
+FROM Users
+WHERE COALESCE(NumFollowers / NULLIF(NumFollowing, 0), 0) >= 1
+GROUP BY Username
+ORDER BY Ratio, Username;
 
 -- Query 17: Show the month with the highest number of posts made.
 SELECT EXTRACT(YEAR_MONTH FROM PostDate) AS YearMonth, COUNT(*) AS NumberOfPosts
@@ -135,17 +140,17 @@ WHERE NOT EXISTS (
     SELECT P.PostID
     FROM Posts P
     WHERE P.Username = ?
-    AND NOT EXISTS (
+      AND NOT EXISTS (
         SELECT 1
         FROM Likes L
         WHERE L.Username = U.Username
-        AND L.PostID = P.PostID
+          AND L.PostID = P.PostID
     )
-    AND NOT EXISTS (
+      AND NOT EXISTS (
         SELECT 1
         FROM Comments C
         WHERE C.Username = U.Username
-        AND C.PostID = P.PostID
+          AND C.PostID = P.PostID
     )
 );
 
