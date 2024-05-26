@@ -30,8 +30,6 @@ BEGIN
     END IF;
 END$$
 
-DELIMITER $$
-
 -- Create a function to get the number of posts a user has liked
 CREATE FUNCTION GetNumLikedPosts(userUsername VARCHAR(255))
     RETURNS INT
@@ -47,8 +45,6 @@ BEGIN
     RETURN numLikedPosts;
 END$$
 
-DELIMITER $$
-
 -- Trigger after inserting a follow to update follow counts and call the procedure
 CREATE TRIGGER after_follow_insert
     AFTER INSERT ON Follows
@@ -58,8 +54,6 @@ BEGIN
     CALL UpdateFollowCounts(NEW.FollowerUsername, NEW.FollowedUsername, 'INCREMENT');
 END$$
 
-DELIMITER $$
-
 -- Trigger after deleting a follow to update follow counts and call the procedure
 CREATE TRIGGER after_follow_delete
     AFTER DELETE ON Follows
@@ -68,10 +62,6 @@ BEGIN
     -- Call the procedure to update follow counts
     CALL UpdateFollowCounts(OLD.FollowerUsername, OLD.FollowedUsername, 'DECREMENT');
 END$$
-
-DELIMITER ;
-
-DELIMITER $$
 
 -- Create a procedure to update post count
 CREATE PROCEDURE UpdatePostCount(
@@ -92,8 +82,6 @@ BEGIN
     END IF;
 END$$
 
-DELIMITER $$
-
 -- Trigger after inserting a post to update post count and call the procedure
 CREATE TRIGGER after_post_insert
     AFTER INSERT ON Posts
@@ -103,8 +91,6 @@ BEGIN
     CALL UpdatePostCount(NEW.Username, 'INCREMENT');
 END$$
 
-DELIMITER $$
-
 -- Trigger after deleting a post to update post count and call the procedure
 CREATE TRIGGER after_post_delete
     AFTER DELETE ON Posts
@@ -113,10 +99,6 @@ BEGIN
     -- Call the procedure to update post count
     CALL UpdatePostCount(OLD.Username, 'DECREMENT');
 END$$
-
-DELIMITER ;
-
-DELIMITER $$
 
 -- Create a procedure to update the number of likes for a post
 CREATE PROCEDURE UpdateNumLikes(
@@ -137,8 +119,6 @@ BEGIN
     END IF;
 END$$
 
-DELIMITER $$
-
 -- Create a procedure to update the number of comments for a post
 CREATE PROCEDURE UpdateNumComments(
     IN post_id INT,
@@ -152,20 +132,11 @@ BEGIN
         WHERE PostID = post_id;
     ELSEIF operation = 'DECREMENT' THEN
         -- Decrement the number of comments for the post
-        -- Trigger after deleting a comment to update the number of comments and call the procedure
-CREATE TRIGGER after_comment_delete
-    AFTER DELETE ON Comments
-    FOR EACH ROW
-BEGIN
-    -- Call the procedure to update the number of comments
-    CALL UpdateNumComments(OLD.PostID, 'DECREMENT');
-END;UPDATE Posts
+        UPDATE Posts
         SET NumComments = NumComments - 1
         WHERE PostID = post_id;
     END IF;
 END$$
-
-DELIMITER $$
 
 -- Trigger after inserting a like to update the number of likes and call the procedure
 CREATE TRIGGER after_like_insert
@@ -176,8 +147,6 @@ BEGIN
     CALL UpdateNumLikes(NEW.PostID, 'INCREMENT');
 END$$
 
-DELIMITER $$
-
 -- Trigger after deleting a like to update the number of likes and call the procedure
 CREATE TRIGGER after_like_delete
     AFTER DELETE ON Likes
@@ -187,8 +156,6 @@ BEGIN
     CALL UpdateNumLikes(OLD.PostID, 'DECREMENT');
 END$$
 
-DELIMITER $$
-
 -- Trigger after inserting a comment to update the number of comments and call the procedure
 CREATE TRIGGER after_comment_insert
     AFTER INSERT ON Comments
@@ -197,8 +164,6 @@ BEGIN
     -- Call the procedure to update the number of comments
     CALL UpdateNumComments(NEW.PostID, 'INCREMENT');
 END$$
-
-DELIMITER $$
 
 -- Trigger after deleting a comment to update the number of comments and call the procedure
 CREATE TRIGGER after_comment_delete
@@ -210,4 +175,3 @@ BEGIN
 END$$
 
 DELIMITER ;
-
