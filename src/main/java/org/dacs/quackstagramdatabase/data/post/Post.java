@@ -3,6 +3,7 @@ package org.dacs.quackstagramdatabase.data.post;
 import lombok.Getter;
 import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
+import org.dacs.quackstagramdatabase.database.entities.PostEntity;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -36,6 +37,13 @@ public class Post {
         this.postedByUsername = postedByUsername;
         this.caption = caption;
         this.extension = extension;
+    }
+
+    public Post(PostEntity postEntity) {
+        this.postID = postEntity.getPostID();
+        this.postedByUsername = postEntity.getPostedByUsername();
+        this.caption = postEntity.getCaption();
+        this.extension = postEntity.getExtension();
     }
 
     public Post uploadImage(File file){

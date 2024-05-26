@@ -54,6 +54,11 @@ public class UIManager {
             default -> null;
         };
 
+        if (newJFrame != null) {
+            newJFrame.repaint();
+            newJFrame.revalidate();
+        }
+
         SwingUtilities.invokeLater(() -> {
             
 //            JFrame newJFrame = ui.newInstance();

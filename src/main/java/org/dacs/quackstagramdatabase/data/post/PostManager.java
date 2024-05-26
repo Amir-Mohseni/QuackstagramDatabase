@@ -1,7 +1,9 @@
 package org.dacs.quackstagramdatabase.data.post;
+import lombok.Setter;
 import org.dacs.quackstagramdatabase.Handler;
 import org.dacs.quackstagramdatabase.data.DataManager;
 import org.dacs.quackstagramdatabase.data.user.User;
+import org.dacs.quackstagramdatabase.data.user.UserManager;
 import org.dacs.quackstagramdatabase.database.DatabaseConfig;
 import org.dacs.quackstagramdatabase.database.EntityManager;
 import org.dacs.quackstagramdatabase.database.entities.CommentEntity;
@@ -24,8 +26,9 @@ import java.util.*;
 @Component
 public class PostManager {
     private EntityManager entityManager;
-    private DataManager dataManager;
     private HashMap<Integer, Post> posts;
+    @Setter
+    private UserManager userManager;
 
     @Autowired
     public PostManager(EntityManager entityManager) {
@@ -50,7 +53,15 @@ public class PostManager {
     }
 
     public List<Post> getAsList(){
-        return new ArrayList<>(posts.values());
+        try {
+            List<Post> posts = new LinkedList<>();
+            entityManager.findAll(PostEntity.class).forEach( p -> posts.add(new Post(p)));
+            return posts;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -60,7 +71,7 @@ public class PostManager {
             List<LikeEntity> allLikes = entityManager.findAll(LikeEntity.class);
             for (LikeEntity like : allLikes) {
                 if (like.getPostId().equals(post.getPostID())) {
-                    likes.add(this.dataManager.forUsers().getByUsername(like.getUsername()));
+                    likes.add(this.userManager.getByUsername(like.getUsername()));
                 }
             }
 
@@ -72,7 +83,7 @@ public class PostManager {
     }
 
     public User getPostedBy(Post post) {
-        return this.dataManager.forUsers().getByUsername(post.getPostedByUsername());
+        return this.userManager.getByUsername(post.getPostedByUsername());
     }
 
 
@@ -107,7 +118,7 @@ public class PostManager {
             List<LikeEntity> allLikes = entityManager.findAll(LikeEntity.class);
             for (LikeEntity like : allLikes) {
                 if (like.getPostId().equals(post.getPostID())) {
-                    User user = this.dataManager.forUsers().getByUsername(like.getUsername());
+                    User user = this.userManager.getByUsername(like.getUsername());
                     Timestamp timestamp = like.getLikeTimestamp();
                     LocalDateTime likeTime = timestamp.toLocalDateTime();
                     map.put(user, likeTime);

@@ -9,7 +9,10 @@ import org.dacs.quackstagramdatabase.database.entities.CredentialEntity;
 import org.dacs.quackstagramdatabase.database.entities.FollowsEntity;
 import org.dacs.quackstagramdatabase.database.entities.PostEntity;
 import org.dacs.quackstagramdatabase.database.entities.UserEntity;
+import org.dacs.quackstagramdatabase.ui.type.NotificationsUI;
+import org.dacs.quackstagramdatabase.ui.type.QuakstagramHomeUI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -23,13 +26,16 @@ import java.util.stream.Collectors;
 public class UserManager {
     private EntityManager entityManager;
     private PostManager postManager;
+    private ApplicationContext appContext;
 
     private User currentUser;
 
     @Autowired
-    public UserManager(EntityManager entityManager, PostManager postManager) {
+    public UserManager(EntityManager entityManager, PostManager postManager, ApplicationContext appContext) {
         this.entityManager = entityManager;
         this.postManager = postManager;
+        this.appContext = appContext;
+        postManager.setUserManager(this);
     }
 
     public List<User> getFollowers(User user) {
@@ -76,6 +82,9 @@ public class UserManager {
             User authenticatedUser = new User(userEntity.getUsername(), credentialEntity.getPasswordHash(), userEntity.getBio(), userEntity.getProfilePicture());
 
             setCurrentUser(authenticatedUser);
+            this.appContext.getBean(NotificationsUI.class).initializeUI();
+            this.appContext.getBean(QuakstagramHomeUI.class).initializeUI();
+
             return authenticatedUser;
         }
         catch (SQLException | IllegalAccessException e) {

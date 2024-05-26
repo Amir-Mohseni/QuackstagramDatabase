@@ -50,7 +50,7 @@ public class QuakstagramHomeUI extends JFrame {
         homePanel = new JPanel(new BorderLayout());
         imageViewPanel = new JPanel(new BorderLayout());
 
-        initializeUI();
+//        initializeUI();
 
         cardPanel.add(homePanel, "Home");
         cardPanel.add(imageViewPanel, "ImageView");
@@ -67,7 +67,7 @@ public class QuakstagramHomeUI extends JFrame {
         add(uiUtil.createNavigationPanel(uiManager), BorderLayout.SOUTH);
     }
 
-    private void initializeUI() {
+    public void initializeUI() {
 
         // Content Scroll Panel
         JPanel contentPanel = new JPanel();

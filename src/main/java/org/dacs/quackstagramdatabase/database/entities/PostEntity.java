@@ -1,11 +1,12 @@
 package org.dacs.quackstagramdatabase.database.entities;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dacs.quackstagramdatabase.database.annotations.Column;
+import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
-import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 
 import java.sql.Timestamp;
 
@@ -28,6 +29,7 @@ public class PostEntity {
     @Column(name = "Username")
     private String username;
 
+    @Getter
     @Column(name = "Caption")
     private String caption;
 
@@ -45,4 +47,20 @@ public class PostEntity {
     @Column(name = "NumComments")
     @Defaulted
     private Integer numberOfComments;
+
+    public Integer getPostID() {
+        return this.postId;
+    }
+
+    public String getPostedByUsername() {
+        return this.username;
+    }
+
+    public String getExtension() {
+        return this.mediaUrl;
+    }
+
+    public Integer getPostId() {
+        return this.postId;
+    }
 }

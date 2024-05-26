@@ -36,10 +36,10 @@ public class NotificationsUI extends JFrame {
         setMinimumSize(new Dimension(UIUtil.WIDTH, UIUtil.HEIGHT));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        initializeUI();
+//        initializeUI();
     }
 
-    private void initializeUI() {
+    public void initializeUI() {
         // Reuse the header and navigation panel creation methods from the main.ui.type.InstagramProfileUI class
         JPanel headerPanel = createHeaderPanel();
         JPanel navigationPanel = uiUtil.createNavigationPanel(uiManager);
