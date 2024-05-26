@@ -1,23 +1,23 @@
 -- Query 1: Find all users who have more than X followers
 SELECT *
 FROM Users
-WHERE NumFollowers > X;
+WHERE NumFollowers > ?;
 
 -- Query 2: Number of posts for a User
 SELECT PostsCount
 FROM Users
-WHERE Username = X;
+WHERE Username = ?;
 
 -- Query 3: Find all comments made on a particular user’s post.
 SELECT *
 FROM Comments
-WHERE PostID = X;
+WHERE PostID = ?;
 
 -- Query 4: Display the top X most liked posts.
 SELECT *
 FROM Posts
 ORDER BY NumLikes DESC
-LIMIT X;
+LIMIT ?;
 
 -- Query 5: Count the number of posts each user has liked.
 SELECT Username, COUNT(PostID) AS NumberOfLikedPosts
@@ -50,7 +50,7 @@ LIMIT 1;
 SELECT *
 FROM Users
 ORDER BY NumFollowers DESC
-LIMIT X;
+LIMIT ?;
 
 -- Query 10: Find posts that have been liked by all users.
 SELECT PostID
@@ -89,7 +89,7 @@ FROM Users U
 WHERE NOT EXISTS (
     SELECT P.PostID
     FROM Posts P
-    WHERE P.Username = X
+    WHERE P.Username = ?
     AND NOT EXISTS (
         SELECT 1
         FROM Likes L
@@ -134,7 +134,7 @@ FROM Users U
 WHERE NOT EXISTS (
     SELECT P.PostID
     FROM Posts P
-    WHERE P.Username = X
+    WHERE P.Username = ?
     AND NOT EXISTS (
         SELECT 1
         FROM Likes L
@@ -157,7 +157,7 @@ FROM Users u
     SELECT f1.FollowedUsername,
            COUNT(*) AS NumFollowersBefore
     FROM Follows f1
-    WHERE f1.FollowDate > DATE_SUB(CURDATE(), INTERVAL X DAY)
+    WHERE f1.FollowDate > DATE_SUB(CURDATE(), INTERVAL ? DAY)
     GROUP BY f1.FollowedUsername
 ) f ON u.Username = f.FollowedUsername
 ORDER BY FollowersIncrease DESC
@@ -170,6 +170,6 @@ LIMIT 1;
 SELECT U.Username
 FROM Users U
 WHERE NumFollowers > (
-    SELECT 0.01 * X * COUNT(*)
+    SELECT 0.01 * ? * COUNT(*)
     FROM Users
 );

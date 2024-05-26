@@ -7,6 +7,8 @@ import org.dacs.quackstagramdatabase.database.annotations.Entity;
 import org.dacs.quackstagramdatabase.database.annotations.Id;
 import org.dacs.quackstagramdatabase.database.annotations.Defaulted;
 
+import java.sql.Timestamp;
+
 @Data
 @Entity(tableName = "Comments")
 @NoArgsConstructor
@@ -34,5 +36,5 @@ public class CommentEntity {
 
     @Column(name = "CommentDate")
     @Defaulted
-    private String commentDate;
+    private Timestamp commentDate;
 }
