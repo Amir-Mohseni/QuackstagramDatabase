@@ -18,3 +18,11 @@ SELECT p.*
 FROM Posts p
 ORDER BY NumLikes DESC
 LIMIT 15;
+
+# I'm afraid the above view might be too easy. This is the hard way to do it.
+CREATE VIEW  top_15_liked_posts AS
+SELECT p.*
+FROM Likes l, Posts p
+WHERE  l.PostID = p.PostID
+GROUP BY l.PostID, l.Username
+ORDER BY COUNT(l.PostID) DESC;
