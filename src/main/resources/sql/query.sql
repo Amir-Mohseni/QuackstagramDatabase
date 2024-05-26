@@ -30,15 +30,10 @@ FROM Users
 WHERE PostsCount = 0;
 
 -- Query 7: List users who follow each other.
-SELECT
-    f1.FollowerUsername AS User1,
-    f1.FollowedUsername AS User2
-FROM
-    Follows f1
-        JOIN Follows f2
-             ON
-                 f1.FollowerUsername = f2.FollowedUsername
-                     AND f1.FollowedUsername = f2.FollowerUsername;
+SELECT u1.Username AS 'Follower 1', u2.Username AS 'Follower 2'
+FROM Users u1, Users u2, Follows f1, Follows f2
+WHERE f1.FollowedUsername = u1.Username AND f1.FollowerUsername = u2.Username AND f2.FollowedUsername = u2.Username AND f2.FollowerUsername = u1.Username AND u1.Username < u2.Username;
+
 
 -- Query 8: Show the user with the highest number of posts.
 SELECT *
