@@ -115,3 +115,99 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+-- Create a procedure to update the number of likes for a post
+CREATE PROCEDURE UpdateNumLikes(
+    IN post_id INT,
+    IN operation VARCHAR(10) -- 'INCREMENT' or 'DECREMENT'
+)
+BEGIN
+    IF operation = 'INCREMENT' THEN
+        -- Increment the number of likes for the post
+        UPDATE Posts
+        SET NumLikes = NumLikes + 1
+        WHERE PostID = post_id;
+    ELSEIF operation = 'DECREMENT' THEN
+        -- Decrement the number of likes for the post
+        UPDATE Posts
+        SET NumLikes = NumLikes - 1
+        WHERE PostID = post_id;
+    END IF;
+END$$
+
+DELIMITER $$
+
+-- Create a procedure to update the number of comments for a post
+CREATE PROCEDURE UpdateNumComments(
+    IN post_id INT,
+    IN operation VARCHAR(10) -- 'INCREMENT' or 'DECREMENT'
+)
+BEGIN
+    IF operation = 'INCREMENT' THEN
+        -- Increment the number of comments for the post
+        UPDATE Posts
+        SET NumComments = NumComments + 1
+        WHERE PostID = post_id;
+    ELSEIF operation = 'DECREMENT' THEN
+        -- Decrement the number of comments for the post
+        -- Trigger after deleting a comment to update the number of comments and call the procedure
+CREATE TRIGGER after_comment_delete
+    AFTER DELETE ON Comments
+    FOR EACH ROW
+BEGIN
+    -- Call the procedure to update the number of comments
+    CALL UpdateNumComments(OLD.PostID, 'DECREMENT');
+END;UPDATE Posts
+        SET NumComments = NumComments - 1
+        WHERE PostID = post_id;
+    END IF;
+END$$
+
+DELIMITER $$
+
+-- Trigger after inserting a like to update the number of likes and call the procedure
+CREATE TRIGGER after_like_insert
+    AFTER INSERT ON Likes
+    FOR EACH ROW
+BEGIN
+    -- Call the procedure to update the number of likes
+    CALL UpdateNumLikes(NEW.PostID, 'INCREMENT');
+END$$
+
+DELIMITER $$
+
+-- Trigger after deleting a like to update the number of likes and call the procedure
+CREATE TRIGGER after_like_delete
+    AFTER DELETE ON Likes
+    FOR EACH ROW
+BEGIN
+    -- Call the procedure to update the number of likes
+    CALL UpdateNumLikes(OLD.PostID, 'DECREMENT');
+END$$
+
+DELIMITER $$
+
+-- Trigger after inserting a comment to update the number of comments and call the procedure
+CREATE TRIGGER after_comment_insert
+    AFTER INSERT ON Comments
+    FOR EACH ROW
+BEGIN
+    -- Call the procedure to update the number of comments
+    CALL UpdateNumComments(NEW.PostID, 'INCREMENT');
+END$$
+
+DELIMITER $$
+
+-- Trigger after deleting a comment to update the number of comments and call the procedure
+CREATE TRIGGER after_comment_delete
+    AFTER DELETE ON Comments
+    FOR EACH ROW
+BEGIN
+    -- Call the procedure to update the number of comments
+    CALL UpdateNumComments(OLD.PostID, 'DECREMENT');
+END$$
+
+DELIMITER ;
+
